@@ -10,44 +10,44 @@ The system analyzes financial transactions using rule-based behavioral fraud det
 
 ## Authentication
 
-* User registration
-* JWT login authentication
-* Protected API routes
-* Password hashing using bcrypt
+- User registration
+- JWT login authentication
+- Protected API routes
+- Password hashing using bcrypt
 
 ## Banking System
 
-* Auto-created bank accounts during registration
-* Account ownership enforcement
-* Transaction processing pipeline
+- Auto-created bank accounts during registration
+- Account ownership enforcement
+- Transaction processing pipeline
 
 ## Fraud Detection Engine
 
 Implemented fraud modules:
 
-* Velocity analysis
-* Location mismatch detection
-* Threshold analysis
-* Behaviour anomaly detection
-* Device anomaly detection
+- Velocity analysis
+- Location mismatch detection
+- Threshold analysis
+- Behaviour anomaly detection
+- Device anomaly detection
 
 ## Risk Engine
 
-* Multi-rule correlation
-* Weighted fraud scoring
-* Automatic ALLOW / REVIEW / BLOCK decisions
+- Multi-rule correlation
+- Weighted fraud scoring
+- Automatic ALLOW / REVIEW / BLOCK decisions
 
 ## Fraud Audit Logging
 
-* Fraud events persisted separately
-* Explainable fraud reasoning
-* Transaction-to-event linkage
+- Fraud events persisted separately
+- Explainable fraud reasoning
+- Transaction-to-event linkage
 
 ## Device Intelligence
 
-* Trusted device learning
-* Device tracking persistence
-* Device anomaly detection
+- Trusted device learning
+- Device tracking persistence
+- Device anomaly detection
 
 ---
 
@@ -55,22 +55,22 @@ Implemented fraud modules:
 
 ## Backend
 
-* FastAPI
-* SQLAlchemy Async ORM
-* AsyncPG
-* JWT Authentication
-* Passlib / bcrypt
+- FastAPI
+- SQLAlchemy Async ORM
+- AsyncPG
+- JWT Authentication
+- Passlib / bcrypt
 
 ## Database
 
-* PostgreSQL
-* Supabase
+- PostgreSQL
+- Supabase
 
 ## Planned Frontend
 
-* React
-* Vite
-* Axios
+- React
+- Vite
+- Axios
 
 ---
 
@@ -159,6 +159,97 @@ http://127.0.0.1:8000/docs
 
 ---
 
+## Database Migrations (Alembic)
+
+BankGuard now uses Alembic for schema version control.
+
+### Apply Latest Migrations
+
+```
+alembic upgrade head
+```
+
+### Generate New Migration
+
+After modifying SQLAlchemy models:
+
+```
+alembic revision --autogenerate -m "migration_name"
+```
+
+Then apply:
+
+```
+alembic upgrade head
+```
+
+### Important
+
+Do NOT use:
+
+```
+Base.metadata.create_all()
+```
+
+Schema changes must go through Alembic migrations only.
+
+---
+
+# Git Workflow
+
+Development uses feature branches.
+
+## Create Branch
+
+```
+git checkout -b feature-name
+```
+
+## Push Branch
+
+```
+git push -u origin feature-name
+```
+
+## Open Pull Request
+
+After pushing:
+
+- open GitHub repository
+- create Pull Request into `master`
+
+Never push unstable work directly into `master`.
+
+---
+
+# Current Infrastructure Status
+
+Implemented:
+
+- JWT authentication
+- protected APIs
+- fraud-rule engine
+- account ownership enforcement
+- trusted device tracking
+- Alembic migrations
+- async PostgreSQL integration
+- fraud audit logging
+
+Current architecture is now collaboration-ready for multi-developer workflows.
+
+---
+
+# Planned Infrastructure
+
+Upcoming:
+
+- Dockerization
+- React frontend
+- admin investigator dashboard
+- advanced fraud heuristics
+- CI/CD pipeline
+- automated testing
+
 # Testing Flow
 
 ## Register User
@@ -215,9 +306,9 @@ Example:
 
 Expected:
 
-* fraud rules triggered
-* risk score returned
-* fraud events persisted
+- fraud rules triggered
+- risk score returned
+- fraud events persisted
 
 ---
 
@@ -227,20 +318,20 @@ Current backend MVP is operational.
 
 Completed:
 
-* async backend infrastructure
-* fraud detection engine
-* JWT authentication
-* protected APIs
-* transaction analytics
-* fraud audit logging
+- async backend infrastructure
+- fraud detection engine
+- JWT authentication
+- protected APIs
+- transaction analytics
+- fraud audit logging
 
 Planned next:
 
-* React frontend
-* Alembic migrations
-* Dockerization
-* advanced fraud heuristics
-* admin investigator dashboard
+- React frontend
+- Alembic migrations
+- Dockerization
+- advanced fraud heuristics
+- admin investigator dashboard
 
 ---
 
@@ -270,9 +361,9 @@ Then create Pull Requests.
 
 Never commit:
 
-* `.env`
-* database credentials
-* JWT secrets
-* virtual environments
+- `.env`
+- database credentials
+- JWT secrets
+- virtual environments
 
 Rotate credentials immediately if exposed.
