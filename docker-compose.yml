@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres:15-alpine
+    container_name: bankguard-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: bankguard
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
