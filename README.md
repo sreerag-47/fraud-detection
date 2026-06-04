@@ -63,8 +63,7 @@ Implemented fraud modules:
 
 ## Database
 
-- PostgreSQL
-- Supabase
+- PostgreSQL (Local instance via Docker Compose)
 
 ## Planned Frontend
 
@@ -77,30 +76,34 @@ Implemented fraud modules:
 # Project Structure
 
 ```text
-backend/
-│
-├── routers/
-├── models/
-├── schemas/
-├── fraud/
-├── utils.py
-├── dependencies.py
-├── database.py
-├── config.py
-├── main.py
+├── migrations/          # Alembic migrations
+├── models/              # SQLAlchemy models
+├── routers/             # FastAPI routers
+├── schemas/             # Pydantic schemas
+├── fraud/               # Fraud detection engine (Python rules)
+├── alembic.ini          # Alembic migration config
+├── config.py            # Settings and Pydantic configuration
+├── database.py          # Database session and engine setup
+├── dependencies.py      # Auth & endpoint dependency helpers
+├── docker-compose.yml   # Local database infrastructure
+├── main.py              # Application entrypoint
+├── requirements.txt     # Python package requirements
+└── utils.py             # Security and cryptography utilities
 ```
 
 ---
 
 # Setup Instructions
 
-## 1. Clone Repository
+## 1. Clone Repository & Start Database
 
 ```powershell
 git clone https://github.com/sreerag-47/fraud-detection.git
 
 cd fraud-detection
-cd backend
+
+# Start local PostgreSQL database
+docker-compose up -d
 ```
 
 ---
@@ -129,12 +132,11 @@ pip install -r requirements.txt
 
 ## 4. Create `.env`
 
-Create a `.env` file inside backend:
+Create a `.env` file in the root directory:
 
 ```env
-DATABASE_URL=YOUR_DATABASE_URL
-
-SECRET_KEY=YOUR_SECRET_KEY
+DATABASE_URL=postgresql+asyncpg://postgres:postgrespassword@localhost:5432/bankguard
+SECRET_KEY=your_secret_key_here
 ```
 
 ---
