@@ -1,210 +1,371 @@
-fraud-detection-app/
-│
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py              # FastAPI app (Friend's domain)
-│   │   ├── database.py          # PostgreSQL connection (Friend's domain)
-│   │   ├── models.py            # DB Schema Tables (Friend's domain)
-│   │   │
-│   │   └── fraud_engine/        # YOUR DOMAIN (Pure Python)
-│   │       ├── __init__.py
-│   │       ├── contract.py      # Step 2: The Agreement File
-│   │       ├── core.py          # The main run_fraud_check function
-│   │       └── rules/           # Individual rule files (velocity, location, etc.)
-│   │           ├── __init__.py
-│   │           ├── velocity.py
-│   │           └── threshold.py
-│   │
-│   └── requirements.txt
-│
-└── frontend/                    # YOUR DOMAIN (React + Tailwind)
-    ├── public/
-    └── src/"# fraud-dectection" 
+# BankGuard
 
+BankGuard is a modular fraud-detection backend platform built using FastAPI, PostgreSQL, SQLAlchemy Async ORM, and JWT authentication.
 
-
-# BankGuard — Current Database Table Structures
-
-## 1. users
-
-Stores authenticated platform users.
-
-| Column        | Type            | Description                |
-| ------------- | --------------- | -------------------------- |
-| id            | Integer (PK)    | Unique user ID             |
-| name          | String          | Full name                  |
-| email         | String (Unique) | User email/login           |
-| password_hash | String          | bcrypt hashed password     |
-| created_at    | DateTime        | Account creation timestamp |
-
-### Relationships
-
-* One user → many accounts
+The system analyzes financial transactions using rule-based behavioral fraud detection and maintains explainable fraud audit trails.
 
 ---
 
-# 2. accounts
+# Current Features
 
-Represents bank accounts linked to users.
+## Authentication
 
-| Column         | Type                    | Description                |
-| -------------- | ----------------------- | -------------------------- |
-| id             | Integer (PK)            | Unique account ID          |
-| user_id        | Integer (FK → users.id) | Owner user                 |
-| account_number | String                  | Bank account number        |
-| balance        | Float                   | Current account balance    |
-| account_type   | String                  | savings/current/etc        |
-| home_city      | String                  | User’s primary city        |
-| home_country   | String                  | User’s primary country     |
-| created_at     | DateTime                | Account creation timestamp |
+- User registration
+- JWT login authentication
+- Protected API routes
+- Password hashing using bcrypt
 
-### Relationships
+## Banking System
 
-* Many accounts → one user
-* One account → many transactions
-* One account → many device logs
+- Auto-created bank accounts during registration
+- Account ownership enforcement
+- Transaction processing pipeline
 
----
+## Fraud Detection Engine
 
-# 3. transactions
+Implemented fraud modules:
 
-Stores all transaction activity.
+- Velocity analysis
+- Location mismatch detection
+- Threshold analysis
+- Behaviour anomaly detection
+- Device anomaly detection
 
-| Column            | Type                       | Description           |
-| ----------------- | -------------------------- | --------------------- |
-| id                | Integer (PK)               | Transaction ID        |
-| account_id        | Integer (FK → accounts.id) | Source account        |
-| amount            | Float                      | Transaction amount    |
-| merchant_name     | String                     | Merchant/business     |
-| merchant_category | String                     | shopping/crypto/etc   |
-| city              | String                     | Transaction city      |
-| country           | String                     | Transaction country   |
-| ip_address        | String                     | Client IP             |
-| device_id         | String                     | Device identifier     |
-| risk_score        | Float                      | Calculated fraud risk |
-| decision          | String                     | ALLOW/REVIEW/BLOCK    |
-| fraud_flags       | JSON                       | Triggered fraud rules |
-| timestamp         | DateTime                   | Transaction timestamp |
+## Risk Engine
 
-### Relationships
+- Multi-rule correlation
+- Weighted fraud scoring
+- Automatic ALLOW / REVIEW / BLOCK decisions
 
-* Many transactions → one account
-* One transaction → many fraud events
+## Fraud Audit Logging
+
+- Fraud events persisted separately
+- Explainable fraud reasoning
+- Transaction-to-event linkage
+
+## Device Intelligence
+
+- Trusted device learning
+- Device tracking persistence
+- Device anomaly detection
 
 ---
 
-# 4. fraud_events
+# Tech Stack
 
-Stores explainable fraud-analysis results.
+## Backend
 
-| Column         | Type                           | Description                |
-| -------------- | ------------------------------ | -------------------------- |
-| id             | Integer (PK)                   | Fraud event ID             |
-| transaction_id | Integer (FK → transactions.id) | Related transaction        |
-| rule_triggered | String                         | Fraud rule code            |
-| severity       | String                         | LOW/MEDIUM/HIGH            |
-| details        | String                         | Human-readable explanation |
-| created_at     | DateTime                       | Fraud event timestamp      |
+- FastAPI
+- SQLAlchemy Async ORM
+- AsyncPG
+- JWT Authentication
+- Passlib / bcrypt
 
-### Relationships
+## Database
 
-* Many fraud events → one transaction
+- PostgreSQL (Local instance via Docker Compose)
 
----
+## Planned Frontend
 
-# 5. device_logs
-
-Tracks known/trusted devices.
-
-| Column     | Type                       | Description             |
-| ---------- | -------------------------- | ----------------------- |
-| id         | Integer (PK)               | Device log ID           |
-| account_id | Integer (FK → accounts.id) | Linked account          |
-| device_id  | String                     | Device fingerprint/ID   |
-| ip_address | String                     | Last known IP           |
-| last_seen  | DateTime                   | Last activity timestamp |
-
-### Relationships
-
-* Many device logs → one account
+- React
+- Vite
+- Axios
 
 ---
 
-# Current Relationship Graph
+# Project Structure
 
 ```text
-users
-  │
-  └── accounts
-         │
-         ├── transactions
-         │       │
-         │       └── fraud_events
-         │
-         └── device_logs
+├── migrations/          # Alembic migrations
+├── models/              # SQLAlchemy models
+├── routers/             # FastAPI routers
+├── schemas/             # Pydantic schemas
+├── fraud/               # Fraud detection engine (Python rules)
+├── alembic.ini          # Alembic migration config
+├── config.py            # Settings and Pydantic configuration
+├── database.py          # Database session and engine setup
+├── dependencies.py      # Auth & endpoint dependency helpers
+├── docker-compose.yml   # Local database infrastructure
+├── main.py              # Application entrypoint
+├── requirements.txt     # Python package requirements
+└── utils.py             # Security and cryptography utilities
 ```
 
 ---
 
-# Current Fraud Rules
+# Setup Instructions
 
-| Rule Code   | Description                 |
-| ----------- | --------------------------- |
-| VEL-01      | High transaction frequency  |
-| VEL-TEST-01 | High-value velocity trigger |
-| LOC-01      | Country mismatch            |
-| THR-01      | High-value threshold        |
-| BEH-01      | Unusual merchant category   |
-| DEV-01      | New device detection        |
+## 1. Clone Repository & Start Database
 
----
+```powershell
+git clone https://github.com/sreerag-47/fraud-detection.git
 
-# Planned Future Tables
+cd fraud-detection
 
-Likely additions later:
-
-| Table          | Purpose                           |
-| -------------- | --------------------------------- |
-| admin_users    | Fraud investigator/admin accounts |
-| fraud_reviews  | Manual analyst review queue       |
-| alerts         | Real-time notifications           |
-| login_attempts | Auth anomaly tracking             |
-| sessions       | Device-bound sessions             |
-| rule_configs   | Dynamic fraud-rule tuning         |
-| risk_snapshots | Historical account risk states    |
-| audit_logs     | System-wide security auditing     |
-
----
-
-# Current Architectural Style
-
-The system currently follows:
-
-```text
-FastAPI
-→ Service Layer
-→ Fraud Engine
-→ SQLAlchemy Async ORM
-→ PostgreSQL
+# Start local PostgreSQL database
+docker-compose up -d
 ```
 
-with modular fraud-rule execution and explainable event persistence.
+---
+
+## 2. Create Virtual Environment
+
+```powershell
+python -m venv env
+```
+
+Activate:
+
+```powershell
+env\Scripts\activate
+```
 
 ---
 
-# Important Infrastructure Note
+## 3. Install Dependencies
 
-Current schema management:
+```powershell
+pip install -r requirements.txt
+```
+
+---
+
+## 4. Create `.env`
+
+Create a `.env` file in the root directory:
+
+```env
+DATABASE_URL=postgresql+asyncpg://postgres:postgrespassword@localhost:5432/bankguard
+SECRET_KEY=your_secret_key_here
+```
+
+---
+
+## 5. Run Backend
+
+```powershell
+uvicorn main:app --reload
+```
+
+Backend:
 
 ```text
+http://127.0.0.1:8000
+```
+
+Swagger Docs:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+---
+
+## Database Migrations (Alembic)
+
+BankGuard now uses Alembic for schema version control.
+
+### Apply Latest Migrations
+
+```
+alembic upgrade head
+```
+
+### Generate New Migration
+
+After modifying SQLAlchemy models:
+
+```
+alembic revision --autogenerate -m "migration_name"
+```
+
+Then apply:
+
+```
+alembic upgrade head
+```
+
+### Important
+
+Do NOT use:
+
+```
 Base.metadata.create_all()
 ```
 
-Planned migration system:
+Schema changes must go through Alembic migrations only.
 
-```text
-Alembic
+---
+
+# Git Workflow
+
+Development uses feature branches.
+
+## Create Branch
+
+```
+git checkout -b feature-name
 ```
 
-before Dockerization and multi-developer scaling.
+## Push Branch
+
+```
+git push -u origin feature-name
+```
+
+## Open Pull Request
+
+After pushing:
+
+- open GitHub repository
+- create Pull Request into `master`
+
+Never push unstable work directly into `master`.
+
+---
+
+# Current Infrastructure Status
+
+Implemented:
+
+- JWT authentication
+- protected APIs
+- fraud-rule engine
+- account ownership enforcement
+- trusted device tracking
+- Alembic migrations
+- async PostgreSQL integration
+- fraud audit logging
+
+Current architecture is now collaboration-ready for multi-developer workflows.
+
+---
+
+# Planned Infrastructure
+
+Upcoming:
+
+- Dockerization
+- React frontend
+- admin investigator dashboard
+- advanced fraud heuristics
+- CI/CD pipeline
+- automated testing
+
+# Testing Flow
+
+## Register User
+
+`POST /auth/register`
+
+Example:
+
+```json
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "StrongPassword123"
+}
+```
+
+---
+
+## Login
+
+Use Swagger Authorize button:
+
+```text
+username = test@example.com
+password = StrongPassword123
+```
+
+---
+
+## Get Accounts
+
+`GET /accounts/me`
+
+---
+
+## Create Transaction
+
+`POST /transactions/`
+
+Example:
+
+```json
+{
+  "account_id": 1,
+  "amount": 75000,
+  "merchant_name": "Crypto Exchange",
+  "merchant_category": "crypto",
+  "city": "Dubai",
+  "country": "UAE",
+  "ip_address": "192.168.1.1",
+  "device_id": "unknown_device_999"
+}
+```
+
+Expected:
+
+- fraud rules triggered
+- risk score returned
+- fraud events persisted
+
+---
+
+# Current Development Status
+
+Current backend MVP is operational.
+
+Completed:
+
+- async backend infrastructure
+- fraud detection engine
+- JWT authentication
+- protected APIs
+- transaction analytics
+- fraud audit logging
+
+Planned next:
+
+- React frontend
+- Alembic migrations
+- Dockerization
+- advanced fraud heuristics
+- admin investigator dashboard
+
+---
+
+# Collaboration Workflow
+
+## Branch Strategy
+
+Never push directly to `main`.
+
+Create feature branches:
+
+```powershell
+git checkout -b feature-name
+```
+
+Push:
+
+```powershell
+git push -u origin feature-name
+```
+
+Then create Pull Requests.
+
+---
+
+# Security Notes
+
+Never commit:
+
+- `.env`
+- database credentials
+- JWT secrets
+- virtual environments
+
+Rotate credentials immediately if exposed.
