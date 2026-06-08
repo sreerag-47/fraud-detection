@@ -60,10 +60,10 @@ async def register(
     account = Account(
         user_id=new_user.id,
         account_number=f"BG{1000 + new_user.id}",
-        balance=10000,
-        account_type="savings",
-        home_city="Kozhikode",
-        home_country="India"
+        balance=user.balance,
+        account_type=user.account_type,
+        home_city=user.home_city,
+        home_country=user.home_country
     )
 
     db.add(account)
@@ -117,5 +117,6 @@ async def login(
 
     return {
         "access_token": access_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "is_admin": db_user.is_admin
     }
