@@ -1,0 +1,3184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BankGuard | Intelligent Fraud Detection Platform</title>
+  <meta name="description" content="BankGuard is an advanced fraud prevention and transaction monitoring system. Monitor velocity anomalies, location mismatches, and behavioral risks.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS Variables & Tokens */
+    :root {
+      --bg-primary: #faf8f5;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f3f0e9;
+      --glass-bg: #ffffff;
+      --glass-border: #111111;
+      --glass-border-muted: #e6e2da;
+      
+      --color-primary: #16a34a; /* Emerald Green */
+      --color-primary-glow: rgba(22, 163, 74, 0.1);
+      --color-warning: #d97706; /* Amber */
+      --color-warning-glow: rgba(217, 119, 6, 0.1);
+      --color-danger: #dc2626; /* Rose Red */
+      --color-danger-glow: rgba(220, 38, 38, 0.1);
+      --color-info: #2563eb; /* Blue */
+      --color-info-glow: rgba(37, 99, 235, 0.1);
+      
+      --text-main: #111111;
+      --text-muted: #555555;
+      --text-dark: #888888;
+      
+      --font-outfit: 'Outfit', sans-serif;
+      --font-inter: 'Inter', sans-serif;
+      
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-inter);
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Utility Styles */
+    .hidden {
+      display: none !important;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: var(--font-outfit);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--text-main);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      z-index: 1000;
+      transform: translateY(150%);
+      transition: transform var(--transition-normal);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    #toast.show {
+      transform: translateY(0);
+    }
+    #toast.success {
+      border-left: 4px solid var(--color-primary);
+    }
+    #toast.error {
+      border-left: 4px solid var(--color-danger);
+    }
+    #toast.info {
+      border-left: 4px solid var(--color-info);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--glass-border-muted);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-dark);
+    }
+
+    /* Minimalist Card Style */
+    .glass-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--glass-border-muted);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: 1px solid transparent;
+      gap: 8px;
+      font-family: var(--font-outfit);
+    }
+    .btn-primary {
+      background: var(--text-main);
+      color: var(--bg-secondary);
+      border: 1px solid var(--text-main);
+    }
+    .btn-primary:hover {
+      background: #333333;
+      border-color: #333333;
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--glass-border-muted);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--text-muted);
+    }
+    .btn-danger {
+      background: var(--color-danger);
+      color: #ffffff;
+      border: 1px solid var(--color-danger);
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+      border-color: #b91c1c;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-allow {
+      background-color: #e8f5e9;
+      color: var(--color-primary);
+      border: 1px solid rgba(22, 163, 74, 0.2);
+    }
+    .badge-review {
+      background-color: #fef3c7;
+      color: var(--color-warning);
+      border: 1px solid rgba(217, 119, 6, 0.2);
+    }
+    .badge-block {
+      background-color: #fee2e2;
+      color: var(--color-danger);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+    .badge-notify {
+      background-color: #fef3c7;
+      color: var(--color-warning);
+      border: 1px solid rgba(217, 119, 6, 0.2);
+    }
+
+    /* Inputs */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      background: #ffffff;
+      border: 1px solid var(--glass-border-muted);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-family: var(--font-inter);
+      font-size: 0.9rem;
+      transition: all var(--transition-fast);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--text-main);
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.08);
+    }
+
+    /* Layout Components */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--text-main);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-brand-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--text-main);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--bg-secondary);
+      font-size: 1.1rem;
+    }
+    .nav-brand-title {
+      font-size: 1.35rem;
+      font-family: var(--font-outfit);
+      color: var(--text-main);
+      font-weight: 700;
+    }
+    .nav-user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Auth Page */
+    .auth-container {
+      max-width: 440px;
+      margin: 60px auto;
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .auth-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+    .auth-header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--glass-border-muted);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all var(--transition-fast);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .auth-tab.active {
+      color: var(--text-main);
+      border-bottom-color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    @media (min-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: 420px 1fr;
+      }
+    }
+
+    /* User details cards */
+    .profile-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--glass-border-muted);
+      border-radius: var(--radius-lg);
+    }
+    .account-balance-card {
+      margin-bottom: 24px;
+      text-align: center;
+      border: 1px solid var(--text-main);
+      background: var(--bg-secondary);
+    }
+    .balance-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .balance-val {
+      font-family: var(--font-outfit);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .account-num-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Demo Fill buttons */
+    .demo-scenario-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .demo-btn {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--glass-border-muted);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .demo-btn:hover {
+      background: var(--text-main);
+      border-color: var(--text-main);
+      color: var(--bg-secondary);
+    }
+
+    /* Transaction Feed */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .transaction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--glass-border-muted);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+    }
+    .transaction-item:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--text-muted);
+    }
+    .tx-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .tx-merchant {
+      font-weight: 600;
+      color: var(--text-main);
+      font-size: 0.95rem;
+    }
+    .tx-details {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .tx-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+    .tx-amount {
+      font-family: var(--font-outfit);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* KPI Grid Admin */
+    .kpi-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      text-align: left;
+      border: 1px solid var(--glass-border-muted);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+    .kpi-card.kpi-volume { border-left: 4px solid var(--color-info); }
+    .kpi-card.kpi-alerts { border-left: 4px solid var(--color-warning); }
+    .kpi-card.kpi-blocked { border-left: 4px solid var(--color-danger); }
+    .kpi-card.kpi-total { border-left: 4px solid var(--text-main); }
+    
+    .kpi-num {
+      font-family: var(--font-outfit);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 6px;
+    }
+
+    /* Filter Tabs Admin */
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--glass-border-muted);
+      padding-bottom: 10px;
+    }
+    .filter-tab {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid transparent;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+    .filter-tab.active {
+      color: var(--bg-secondary);
+      background: var(--text-main);
+      border-color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* Modal / Inspector */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(17, 15, 12, 0.4);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity var(--transition-normal);
+    }
+    .modal-content {
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--text-main);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.4rem;
+    }
+    .modal-close:hover {
+      color: var(--text-main);
+    }
+
+    /* Fraud Alert list inside modal */
+    .fraud-rules-list {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .fraud-rule-item {
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: #fee2e2;
+      border: 1px solid rgba(220, 38, 38, 0.15);
+      position: relative;
+    }
+    .fraud-rule-item.rule-warning {
+      background: #fef3c7;
+      border: 1px solid rgba(217, 119, 6, 0.15);
+    }
+    .rule-title {
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      font-family: var(--font-outfit);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .rule-details {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Risk Score Gauge */
+    .risk-gauge-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--glass-border-muted);
+    }
+    .risk-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--glass-border-muted);
+      border-radius: 9999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .risk-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 9999px;
+      transition: width 0.8s cubic-bezier(0.1, 0.8, 0.2, 1);
+    }
+    .risk-score-value {
+      font-family: var(--font-outfit);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    
+    /* Search box admin */
+    .search-container {
+      margin-bottom: 16px;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      margin: 64px 0 32px 0;
+      color: var(--text-dark);
+      font-size: 0.8rem;
+      border-top: 1px solid var(--glass-border-muted);
+      padding-top: 24px;
+    }
+
+    /* Dot indicators */
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-allow { background-color: var(--color-primary); }
+    .dot-review { background-color: var(--color-warning); }
+    .dot-block { background-color: var(--color-danger); }
+    .dot-notify { background-color: var(--color-warning); }
+
+    /* Switch toggle button */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 38px;
+      height: 20px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--bg-tertiary);
+      transition: .3s;
+      border-radius: 34px;
+      border: 1px solid var(--glass-border-muted);
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--text-dark);
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--text-main);
+      border-color: var(--text-main);
+    }
+    input:checked + .slider:before {
+      transform: translateX(18px);
+      background-color: var(--bg-secondary);
+    }
+    
+    .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .rule-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--glass-border-muted);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rule-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .rule-code {
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+    .rule-sql {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: var(--bg-tertiary);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: var(--color-info);
+      border: 1px solid var(--glass-border-muted);
+    }
+    
+    /* Restructured Admin Console Layout (3-Column Grid) */
+    .admin-three-column-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr 380px;
+      gap: 20px;
+      margin-top: 20px;
+      align-items: start;
+    }
+    @media (max-width: 1200px) {
+      .admin-three-column-grid {
+        grid-template-columns: 320px 1fr;
+      }
+    }
+    @media (max-width: 768px) {
+      .admin-three-column-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .admin-feed-column {
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .admin-rules-column {
+      position: sticky;
+      top: 20px;
+      max-height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    /* Studio CSS Custom Tokens */
+    .nav-tab-btn {
+      font-family: var(--font-outfit);
+      font-weight: 500;
+    }
+    .nav-tab-btn.active {
+      background: var(--text-main) !important;
+      color: var(--bg-secondary) !important;
+      border-color: var(--text-main) !important;
+    }
+    
+    .db-grid-th, .db-grid-td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--glass-border-muted);
+    }
+    .db-grid-th {
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-tertiary);
+    }
+    .db-grid-row:hover {
+      background: var(--bg-primary);
+    }
+    .sql-res-th, .sql-res-td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--glass-border-muted);
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    .sql-res-th {
+      background: var(--bg-tertiary);
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+  </style>
+<body>
+
+  <!-- Toast Element -->
+  <div id="toast">
+    <span id="toast-icon"></span>
+    <span id="toast-text"></span>
+  </div>
+
+  <div class="container">
+    <!-- Navigation Bar -->
+    <header class="navbar" style="flex-wrap: wrap; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 32px; flex-wrap: wrap;">
+        <a href="#" class="nav-brand" style="margin-right: 8px;">
+          <div class="nav-brand-logo">B</div>
+          <span class="nav-brand-title">BankGuard</span>
+        </a>
+        <nav class="nav-links hidden" id="nav-views-toggle" style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm nav-tab-btn active" id="nav-btn-user" onclick="switchView('user')" style="padding: 6px 12px; font-size: 0.85rem;">Client Portal</button>
+          <button class="btn btn-secondary btn-sm nav-tab-btn" id="nav-btn-admin" onclick="switchView('admin')" style="padding: 6px 12px; font-size: 0.85rem;">Auditor Console</button>
+          <button class="btn btn-secondary btn-sm nav-tab-btn" id="nav-btn-studio" onclick="switchView('studio')" style="padding: 6px 12px; font-size: 0.85rem;">API & DB Studio</button>
+        </nav>
+      </div>
+      <div class="nav-user-info hidden" id="nav-profile">
+        <span id="nav-user-display" style="font-weight: 500; font-size: 0.95rem;"></span>
+        <span class="badge" id="nav-role-badge"></span>
+        <button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button>
+      </div>
+    </header>
+
+    <!-- Main Views -->
+    
+    <!-- 1. AUTHENTICATION VIEW -->
+    <main class="auth-container glass-card" id="view-auth">
+      <div class="auth-header">
+        <h1>Welcome to BankGuard</h1>
+        <p>Real-time machine learning & rule-based fraud logs</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login">Login</div>
+        <div class="auth-tab" id="tab-register">Register</div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="form-login">
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-control" required placeholder="name@domain.com">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Sign In</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="form-register" class="hidden">
+        <div class="form-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" class="form-control" required placeholder="Alice Smith">
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-control" required placeholder="alice@example.com">
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-control" required placeholder="••••••••">
+        </div>
+        
+        <!-- User Details Collection -->
+        <h4 style="margin: 24px 0 12px 0; font-size: 0.95rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 6px;">Collect Location & Account Details</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="reg-city">Home City</label>
+            <input type="text" id="reg-city" class="form-control" value="Mumbai" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-country">Home Country</label>
+            <input type="text" id="reg-country" class="form-control" value="India" required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label for="reg-acctype">Account Type</label>
+            <select id="reg-acctype" class="form-control">
+              <option value="savings">Savings</option>
+              <option value="current">Current</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-balance">Initial Balance (₹)</label>
+            <input type="number" id="reg-balance" class="form-control" value="150000" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+      </form>
+    </main>
+
+    <!-- 2. USER DASHBOARD VIEW -->
+    <main class="hidden" id="view-user">
+      <div class="profile-banner glass-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Welcome back,</span>
+          <h2 id="user-display-name" style="font-size: 1.6rem; color: var(--text-main); font-weight: 700;">-</h2>
+          <div id="user-accnum-display" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Account Number: BG-----</div>
+        </div>
+        <div style="display: flex; gap: 40px; text-align: right;">
+          <div>
+            <span style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display:block;">Location</span>
+            <span id="user-display-location" style="font-weight: 600; color: var(--text-main); font-size: 1rem;">-</span>
+          </div>
+          <div>
+            <span style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display:block;">Total Balance</span>
+            <span class="balance-val" id="user-balance-display" style="font-size: 1.6rem; font-weight: 700; line-height: 1; color: var(--text-main);">₹0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- User Left Column: Submit Transaction Form -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+
+          <!-- New Transaction Form -->
+          <div class="glass-card">
+            <h3 style="margin-bottom: 8px;">New Transaction</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+              Submit a mock transaction to test our Postgres fraud triggers rules.
+            </p>
+
+            <div class="demo-scenario-row">
+              <span style="font-size: 0.75rem; color: var(--text-dark); align-self: center; margin-right: 4px;">Pre-fill scenario:</span>
+              <button class="demo-btn" onclick="fillScenario('normal')">✅ Normal (Mumbai)</button>
+              <button class="demo-btn" onclick="fillScenario('location')">✈️ Location (Dubai)</button>
+              <button class="demo-btn" onclick="fillScenario('threshold')">💰 Threshold (₹75K)</button>
+              <button class="demo-btn" onclick="fillScenario('crypto')">🪙 Crypto (Binance)</button>
+              <button class="demo-btn" onclick="fillScenario('device')">📱 Spoofing</button>
+            </div>
+
+            <form id="form-transaction">
+              <div class="form-group">
+                <label for="tx-amount">Amount (₹)</label>
+                <input type="number" id="tx-amount" class="form-control" required placeholder="e.g. 500" step="any">
+              </div>
+              <div class="form-group">
+                <label for="tx-merchant">Merchant Name</label>
+                <input type="text" id="tx-merchant" class="form-control" required placeholder="e.g. Starbucks">
+              </div>
+              <div class="form-group">
+                <label for="tx-category">Merchant Category</label>
+                <select id="tx-category" class="form-control">
+                  <option value="coffee">Coffee</option>
+                  <option value="food">Food</option>
+                  <option value="shopping">Shopping / Retail</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="jewelry">Jewellery</option>
+                  <option value="crypto">Crypto Exchange</option>
+                  <option value="luxury">Luxury Stores</option>
+                  <option value="transport">Transport</option>
+                  <option value="digital">Digital Goods</option>
+                  <option value="services">Services</option>
+                </select>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label for="tx-city">Transaction City</label>
+                  <input type="text" id="tx-city" class="form-control" required placeholder="Mumbai">
+                </div>
+                <div class="form-group">
+                  <label for="tx-country">Transaction Country</label>
+                  <input type="text" id="tx-country" class="form-control" required placeholder="India">
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                  <label for="tx-ip">IP Address</label>
+                  <input type="text" id="tx-ip" class="form-control" required placeholder="192.168.1.10">
+                </div>
+                <div class="form-group">
+                  <label for="tx-device">Device ID</label>
+                  <input type="text" id="tx-device" class="form-control" required placeholder="my_macbook_pro">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">Process Transaction</button>
+            </form>
+          </div>
+
+        </div>
+
+        <!-- User Right Column: History Feed -->
+        <div class="glass-card">
+          <div class="section-header">
+            <h3 class="section-title">My Transaction History</h3>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-user-tx">Refresh</button>
+          </div>
+          
+          <div class="transaction-list" id="user-tx-list">
+            <!-- Dynamic elements loaded here -->
+            <div style="text-align: center; color: var(--text-dark); padding: 40px 0;">
+              No transactions recorded yet. Submit your first above!
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- 3. ADMIN INVESTIGATOR VIEW -->
+    <main class="hidden" id="view-admin">
+      <!-- Top header & KPIs -->
+      <div style="margin-bottom: 24px;">
+        <!-- Banner -->
+        <div class="profile-banner glass-card" style="margin-bottom: 24px;">
+          <div>
+            <span style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Compliance Console</span>
+            <h2 style="font-size: 1.6rem; color: var(--text-main); font-weight: 700;">Risk Engine Auditing Dashboard</h2>
+          </div>
+        </div>
+        
+        <!-- KPI Metrics Row -->
+        <div class="kpi-container">
+          <div class="kpi-card kpi-total">
+            <div class="balance-label">Total Transactions</div>
+            <div class="kpi-num" id="kpi-tx-count">0</div>
+          </div>
+          <div class="kpi-card kpi-volume">
+            <div class="balance-label">Total Volume Processed</div>
+            <div class="kpi-num" id="kpi-tx-volume">₹0.00</div>
+          </div>
+          <div class="kpi-card kpi-alerts">
+            <div class="balance-label">Review Requests</div>
+            <div class="kpi-num" id="kpi-tx-alerts" style="color: var(--color-warning);">0</div>
+          </div>
+          <div class="kpi-card kpi-blocked">
+            <div class="balance-label">Blocked Transactions</div>
+            <div class="kpi-num" id="kpi-tx-blocked" style="color: var(--color-danger);">0</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 3-Column Grid -->
+      <div class="admin-three-column-grid">
+        
+        <!-- Column 1: Threat Intel Feed -->
+        <aside class="admin-feed-column glass-card">
+          <div class="section-header" style="margin-bottom: 12px;">
+            <h3 class="section-title" style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0;">Threat Intel Feed</h3>
+            <button class="btn btn-secondary btn-sm" id="btn-refresh-admin" style="padding: 4px 10px; font-size: 0.75rem;">Reload</button>
+          </div>
+          
+          <!-- Filters -->
+          <div class="filter-tabs" style="margin-bottom: 12px; gap: 4px; display: flex; justify-content: space-between;">
+            <button class="filter-tab active" onclick="filterAdminTransactions('ALL')" style="padding: 4px 6px; font-size: 0.75rem; flex: 1; text-align: center;">All</button>
+            <button class="filter-tab" onclick="filterAdminTransactions('FLAGGED')" style="padding: 4px 6px; font-size: 0.75rem; flex: 1; text-align: center;">Flagged</button>
+            <button class="filter-tab" onclick="filterAdminTransactions('BLOCKED')" style="padding: 4px 6px; font-size: 0.75rem; flex: 1; text-align: center;">Blocked</button>
+          </div>
+
+          <!-- Search Box -->
+          <div class="search-container" style="margin-bottom: 12px;">
+            <input type="text" id="admin-search-input" class="form-control" placeholder="Search alerts..." oninput="handleAdminSearch()" style="padding: 8px 10px; font-size: 0.8rem;">
+          </div>
+
+          <!-- Transaction List -->
+          <div class="transaction-list" id="admin-tx-list" style="max-height: calc(100vh - 360px); overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px;">
+            <!-- Dynamic transactions go here -->
+          </div>
+        </aside>
+
+        <!-- Column 2: Admin inspector -->
+        <div class="glass-card" id="admin-inspector" style="align-self: start;">
+          <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 4px;">Transaction Audit Details</h3>
+          <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 20px;">
+            Select a transaction from the Threat Intel feed to load diagnostics.
+          </p>
+
+          <div id="inspector-placeholder" style="text-align: center; color: var(--text-dark); padding: 40px 0; border: 1px dashed var(--glass-border-muted); border-radius: var(--radius-md);">
+            No transaction selected
+          </div>
+
+          <div id="inspector-details" class="hidden">
+            <!-- Account Owner Details -->
+            <div style="border-bottom: 1px solid var(--glass-border-muted); padding-bottom: 12px; margin-bottom: 12px;">
+              <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700;">Account Owner Details</span>
+              <div id="inspect-user-name" style="font-weight: 600; color: var(--text-main); margin-top: 4px; font-size: 1rem;">-</div>
+              <div id="inspect-user-email" style="font-size: 0.8rem; color: var(--text-muted);">-</div>
+              <div id="inspect-user-acc" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">BG-----</div>
+            </div>
+
+            <!-- Transaction Basic Info -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700;">Amount</span>
+                <div id="inspect-amount" style="font-family: var(--font-outfit); font-weight: 700; color: var(--text-main); font-size: 1.25rem;">₹0.00</div>
+              </div>
+              <div>
+                <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700;">Decision</span>
+                <div style="margin-top: 2px;"><span id="inspect-badge" class="badge badge-allow">-</span></div>
+              </div>
+            </div>
+
+            <!-- Risk Score Widget -->
+            <div style="margin-bottom: 12px;">
+              <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700;">Weighted Risk Score</span>
+              <div class="risk-gauge-container">
+                <div class="risk-score-value" id="inspect-risk-val">0.00</div>
+                <div class="risk-bar-bg">
+                  <div class="risk-bar-fill" id="inspect-risk-bar"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Telemetry Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; font-size: 0.8rem; background: var(--bg-tertiary); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border-muted);">
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Location</span>
+                <span id="inspect-location" style="color: var(--text-main); font-weight: 500;">-</span>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Category</span>
+                <span id="inspect-category" style="color: var(--text-main); font-weight: 500; text-transform: capitalize;">-</span>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">IP Address</span>
+                <span id="inspect-ip" style="color: var(--text-main); font-weight: 500;">-</span>
+              </div>
+              <div>
+                <span style="color: var(--text-muted); display: block; font-size: 0.75rem;">Device ID</span>
+                <span id="inspect-device" style="color: var(--text-main); font-weight: 500;">-</span>
+              </div>
+            </div>
+
+            <!-- Triggered Rules Audits -->
+            <div>
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700;">Trigger Rules Audit Log</span>
+              <div class="fraud-rules-list" id="inspect-rules-list">
+                <!-- Loaded dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Rules Engine Control -->
+        <aside class="admin-rules-column glass-card" id="admin-rules-control">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px;">
+            <h3 class="section-title" style="margin-bottom: 0; font-size: 1.1rem; font-weight: 700;">System Rules</h3>
+            <button class="btn btn-primary btn-sm" onclick="openAddRuleModal()" style="padding: 4px 8px; font-size: 0.75rem;">+ Add</button>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 12px;">
+            Listing active behavioral triggers executed in database pipeline.
+          </p>
+          
+          <!-- Rules List Catalog -->
+          <div class="rules-grid" id="admin-rules-list" style="display: flex; flex-direction: column; gap: 10px; max-height: calc(100vh - 220px); overflow-y: auto; padding-right: 2px;">
+            <!-- Loaded dynamically -->
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <!-- 4. MODAL: TRANSACTION DETAILS (For Users) -->
+    <div class="modal-overlay hidden" id="user-tx-modal">
+      <div class="modal-content glass-card">
+        <button class="modal-close" onclick="closeUserTxModal()">&times;</button>
+        <h3 style="margin-bottom: 8px;">Transaction Breakdown</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">
+          Detailed diagnostics of decision calculations performed inside PostgreSQL.
+        </p>
+
+        <!-- Dynamic Modal details -->
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--glass-border-muted); padding-bottom: 16px; margin-bottom: 16px;">
+          <div>
+            <span style="font-size: 0.75rem; color: var(--text-dark); text-transform: uppercase;">Merchant</span>
+            <div id="modal-merchant" style="font-size: 1.2rem; font-weight: 600; color: var(--text-main);">-</div>
+            <div id="modal-datetime" style="font-size: 0.85rem; color: var(--text-muted);">-</div>
+          </div>
+          <div style="text-align: right;">
+            <span style="font-size: 0.75rem; color: var(--text-dark); text-transform: uppercase;">Amount</span>
+            <div id="modal-amount" style="font-family: var(--font-outfit); font-size: 1.4rem; font-weight: 700; color: var(--text-main);">₹0.00</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div>
+            <span style="font-size: 0.75rem; color: var(--text-dark); text-transform: uppercase;">Final Decision</span>
+            <div style="margin-top: 4px;"><span id="modal-badge" class="badge badge-allow">-</span></div>
+          </div>
+          <div>
+            <span style="font-size: 0.75rem; color: var(--text-dark); text-transform: uppercase;">Location Metadata</span>
+            <div id="modal-location" style="margin-top: 4px; font-weight: 500; font-size: 0.95rem; color: var(--text-main);">-</div>
+          </div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-dark); text-transform: uppercase;">Engine Risk Score</span>
+          <div class="risk-gauge-container">
+            <div class="risk-score-value" id="modal-risk-val">0.00</div>
+            <div class="risk-bar-bg">
+              <div class="risk-bar-fill" id="modal-risk-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <span style="font-size: 0.75rem; color: var(--text-dark); text-transform: uppercase; font-weight: 700;">Triggered Rules Details</span>
+          <div class="fraud-rules-list" id="modal-rules-list">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 5. MODAL: ADD RULE (For Admins) -->
+    <div class="modal-overlay hidden" id="add-rule-modal">
+      <div class="modal-content glass-card" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeAddRuleModal()">&times;</button>
+        <h3 style="margin-bottom: 8px;">Create Fraud Rule</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">
+          Define custom triggers evaluated automatically during mock transaction runs.
+        </p>
+        <form id="form-add-rule">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group">
+              <label for="rule-code">Rule Code</label>
+              <input type="text" id="rule-code" class="form-control" required placeholder="e.g. CUST-01">
+            </div>
+            <div class="form-group">
+              <label for="rule-name">Rule Name</label>
+              <input type="text" id="rule-name" class="form-control" required placeholder="e.g. High Spend">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="rule-desc">Description</label>
+            <input type="text" id="rule-desc" class="form-control" placeholder="Describe rule purpose">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 120px; gap: 12px;">
+            <div class="form-group">
+              <label for="rule-sql">SQL Expression</label>
+              <input type="text" id="rule-sql" class="form-control" required placeholder="e.g. :amount > 5000">
+            </div>
+            <div class="form-group">
+              <label for="rule-weight">Weight (0-1)</label>
+              <input type="number" id="rule-weight" class="form-control" required placeholder="0.25" step="0.01" min="0" max="1">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Create Rule</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 6. DEVELOPER STUDIO VIEW (Postman & DB Admin) -->
+    <main class="hidden" id="view-studio">
+      <div class="profile-banner glass-card" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Developer Studio</span>
+          <h2 style="font-size: 1.6rem; color: var(--text-main); font-weight: 700;">Postman & DB Admin Playground</h2>
+        </div>
+        <div class="filter-tabs" style="border: none; padding: 0; margin: 0; display: flex; gap: 8px;">
+          <button class="filter-tab active" id="btn-studio-tab-api" onclick="switchStudioSubTab('api')">🔌 API Client & Simulator</button>
+          <button class="filter-tab" id="btn-studio-tab-db" onclick="switchStudioSubTab('db')">🗄️ Database Explorer & SQL</button>
+        </div>
+      </div>
+
+      <!-- API CLIENT & SIMULATOR TAB -->
+      <div id="studio-tab-api">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+          <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; align-items: start;">
+              
+              <!-- Left Column: Request Builder -->
+              <div class="glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                  <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Request Builder (Postman Style)</h3>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Live Traffic:</span>
+                    <label class="switch">
+                      <input type="checkbox" id="simulator-toggle" onchange="toggleSimulator(this.checked)">
+                      <span class="slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                  <select id="studio-req-method" class="form-control" style="width: 100px; font-weight: 700; color: var(--color-primary);">
+                    <option value="POST">POST</option>
+                  </select>
+                  <input type="text" id="studio-req-url" class="form-control" value="/transactions/" readonly style="font-family: monospace; background: var(--bg-tertiary); font-weight: 500;">
+                  <button class="btn btn-primary" onclick="sendStudioTransaction()">Send</button>
+                </div>
+
+                <div class="form-group">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                    <label style="margin: 0;">Payload JSON Body</label>
+                    <select id="studio-payload-preset" class="form-control" onchange="loadPresetPayload(this.value)" style="width: 200px; padding: 4px 8px; font-size: 0.8rem; height: 32px;">
+                      <option value="normal">✅ Preset: Normal Spend</option>
+                      <option value="location">✈️ Preset: Dubai Location Anomaly</option>
+                      <option value="threshold">💰 Preset: Large Threshold Spend</option>
+                      <option value="crypto">🪙 Preset: Anomalous Crypto Purchase</option>
+                      <option value="device">📱 Preset: Untrusted Device Anomaly</option>
+                      <option value="velocity">⚡ Preset: Velocity Frequency Limit</option>
+                    </select>
+                  </div>
+                  
+                  <div style="margin-bottom: 12px; background: var(--bg-tertiary); padding: 8px 12px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.8rem; border: 1px solid var(--glass-border-muted);">
+                    <span style="font-weight: 500; color: var(--text-muted);">Bind request to account:</span>
+                    <select id="studio-bind-account" class="form-control" onchange="bindAccountToPayload()" style="width: 200px; padding: 2px 6px; font-size: 0.8rem; height: 28px;"></select>
+                  </div>
+
+                  <textarea id="studio-req-body" class="form-control" rows="12" style="font-family: monospace; font-size: 0.85rem; background: #0f172a; color: #38bdf8; border-color: #1e293b; line-height: 1.4; padding: 12px;" placeholder="{}"></textarea>
+                </div>
+              </div>
+
+              <!-- Right Column: Response Viewer -->
+              <div class="glass-card">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px;">Response JSON Console</h3>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--glass-border-muted); padding-bottom: 8px;">
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">
+                    Status: <span id="studio-res-status" style="font-weight: 700; color: var(--text-dark);">-</span>
+                  </div>
+                  <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);">
+                    Time: <span id="studio-res-time" style="font-weight: 700; color: var(--text-dark);">-</span>
+                  </div>
+                </div>
+
+                <div id="studio-res-analysis" class="hidden" style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--glass-border-muted); border-radius: var(--radius-md); background: var(--bg-tertiary);">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                    <div>
+                      <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700; display: block; margin-bottom: 4px;">Engine Decision</span>
+                      <span id="studio-res-badge" class="badge">-</span>
+                    </div>
+                    <div>
+                      <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700; display: block; margin-bottom: 4px;">Risk Score</span>
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span id="studio-res-risk-val" style="font-weight: 700; font-size: 1.1rem; font-family: var(--font-outfit);">-</span>
+                        <div class="risk-bar-bg" style="height: 6px; width: 80px; margin: 0;">
+                          <div class="risk-bar-fill" id="studio-res-risk-bar" style="height: 100%;"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div id="studio-res-rules-container" style="margin-top: 12px; border-top: 1px solid var(--glass-border-muted); padding-top: 8px;">
+                    <span style="font-size: 0.7rem; text-transform: uppercase; color: var(--text-dark); font-weight: 700; display: block; margin-bottom: 4px;">Rules Fired</span>
+                    <div id="studio-res-rules-list" class="fraud-rules-list" style="margin: 0; display: flex; flex-direction: column; gap: 6px;"></div>
+                  </div>
+                </div>
+
+                <div style="position: relative;">
+                  <pre id="studio-res-body" style="font-family: monospace; font-size: 0.85rem; background: #0f172a; color: #f8fafc; border-radius: var(--radius-md); padding: 16px; min-height: 250px; max-height: 400px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; margin: 0; border: 1px solid #1e293b;">Waiting for transaction request...</pre>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Live simulator stream log -->
+          <div class="glass-card" style="margin-top: 12px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span>📡 Live Database Transaction Stream</span>
+              <span class="dot dot-allow" id="simulator-status-dot" style="width: 10px; height: 10px; background-color: var(--text-dark);"></span>
+            </h3>
+            <div id="simulator-log-stream" style="background: #0f172a; font-family: monospace; font-size: 0.85rem; color: #e2e8f0; border-radius: var(--radius-md); padding: 12px; height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; border: 1px solid #1e293b;">
+              <div style="color: #64748b; font-style: italic;">Transaction events will stream here once requests are sent. Toggle live traffic to generate automatic logs.</div>
+            </div>
+          </div>
+
+          <!-- Webhook Settings & Events Console -->
+          <div class="glass-card" style="margin-top: 12px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <span>⚓ Dynamic Webhook Logs Console (Real-time DB Trigger)</span>
+              <button class="btn btn-secondary btn-sm" onclick="clearWebhookLogs()" style="padding: 4px 8px; font-size: 0.75rem;">Clear Logs</button>
+            </h3>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; background: var(--bg-tertiary); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border-muted); flex-wrap: wrap; align-items: center;">
+              <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); min-width: 140px;">Webhook Target URL:</span>
+              <input type="text" id="webhook-target-url-input" class="form-control" style="flex: 1; padding: 4px 8px; font-size: 0.8rem; height: 32px;" placeholder="e.g. http://127.0.0.1:8000/dev/webhook-receiver or Postman Webhook">
+              <button class="btn btn-primary btn-sm" onclick="saveWebhookSettings()" style="height: 32px; font-size: 0.8rem; padding: 0 12px;">Save URL</button>
+            </div>
+
+            <div id="webhook-event-log" style="background: #0f172a; font-family: monospace; font-size: 0.85rem; color: #10b981; border-radius: var(--radius-md); padding: 12px; height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; border: 1px solid #1e293b;">
+              <div style="color: #64748b; font-style: italic;">No webhook events dispatched yet. Make a transaction to trigger database update alerts.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATABASE EXPLORER & SQL TAB -->
+      <div id="studio-tab-db" class="hidden">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+          
+          <!-- Table Selector and Grid Manager -->
+          <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Database Grid Explorer</h3>
+                <select id="studio-db-table-select" class="form-control" onchange="loadStudioTableData(this.value)" style="width: 220px; font-weight: 600;">
+                  <option value="users">👤 Users (users)</option>
+                  <option value="accounts">💳 Accounts (accounts)</option>
+                  <option value="transactions">💸 Transactions (transactions)</option>
+                  <option value="fraud_rules">⚙️ Fraud Rules (fraud_rules)</option>
+                  <option value="fraud_events">🚨 Fraud Events (fraud_events)</option>
+                  <option value="device_logs">📱 Device Logs (device_logs)</option>
+                </select>
+              </div>
+              
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary btn-sm" onclick="refreshActiveStudioTable()">🔄 Refresh Grid</button>
+                <button class="btn btn-primary btn-sm" onclick="openCreateRowModal()">➕ Add Row</button>
+              </div>
+            </div>
+
+            <div style="overflow-x: auto; border: 1px solid var(--glass-border-muted); border-radius: var(--radius-md); background: #ffffff; min-height: 250px; max-height: 500px; overflow-y: auto;">
+              <table id="studio-db-grid" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                <thead style="background: var(--bg-tertiary); position: sticky; top: 0; z-index: 1;">
+                  <!-- Dynamic headers -->
+                </thead>
+                <tbody>
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Raw SQL Console -->
+          <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0;">Interactive SQL Console</h3>
+              <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Direct PostgreSQL access (async pg session)</span>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+              Execute direct SQL operations. Example query: <code>SELECT a.account_number, u.name, a.balance FROM accounts a JOIN users u ON a.user_id = u.id;</code>
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <textarea id="studio-sql-query" class="form-control" rows="4" style="font-family: monospace; font-size: 0.9rem; padding: 12px; background: #0f172a; color: #38bdf8; border-color: #1e293b;" placeholder="SELECT * FROM accounts LIMIT 5;"></textarea>
+              <div style="text-align: right;">
+                <button class="btn btn-primary" onclick="executeStudioSQL()">⚡ Run SQL Command</button>
+              </div>
+            </div>
+
+            <div id="studio-sql-result-container" class="hidden" style="margin-top: 16px;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px;">Execution Result</h4>
+              <div id="studio-sql-message" style="font-family: monospace; font-size: 0.8rem; margin-bottom: 8px; padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--glass-border-muted);"></div>
+              
+              <div style="overflow-x: auto; border: 1px solid var(--glass-border-muted); border-radius: var(--radius-md); background: #ffffff; max-height: 300px; overflow-y: auto;">
+                <table id="studio-sql-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                  <thead style="background: var(--bg-tertiary); position: sticky; top: 0;">
+                    <!-- Dynamic headers -->
+                  </thead>
+                  <tbody>
+                    <!-- Dynamic rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL: ADD DB ROW -->
+    <div class="modal-overlay hidden" id="studio-add-row-modal">
+      <div class="modal-content glass-card" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeCreateRowModal()">&times;</button>
+        <h3 style="margin-bottom: 8px;">Insert Table Record</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;" id="studio-add-row-desc">
+          Add new entry directly to the selected database table.
+        </p>
+        <form id="form-studio-add-row">
+          <div id="studio-add-row-fields" style="display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 4px;">
+            <!-- Dynamically generated fields -->
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Insert Record</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: EDIT DB ROW -->
+    <div class="modal-overlay hidden" id="studio-edit-row-modal">
+      <div class="modal-content glass-card" style="max-width: 500px;">
+        <button class="modal-close" onclick="closeEditRowModal()">&times;</button>
+        <h3 style="margin-bottom: 8px;">Modify Table Record</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;" id="studio-edit-row-desc">
+          Update parameters of record inside the database table.
+        </p>
+        <form id="form-studio-edit-row">
+          <input type="hidden" id="studio-edit-row-id">
+          <div id="studio-edit-row-fields" style="display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; padding-right: 4px;">
+            <!-- Dynamically generated fields -->
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>BankGuard Enterprise Core Platform &copy; 2026. Made with Postgres Trigger Engines.</p>
+    </footer>
+  </div>
+
+  <!-- Vanilla JS Engine Logic -->
+  <script>
+    // State management
+    let state = {
+      token: localStorage.getItem('bg_token') || null,
+      isAdmin: localStorage.getItem('bg_is_admin') === 'true',
+      user: null,
+      account: null,
+      userTransactions: [],
+      adminTransactions: [],
+      adminFraudEvents: [],
+      selectedAdminTxId: null,
+      adminFilter: 'ALL',
+      adminSearchQuery: '',
+      rules: []
+    };
+
+    let studioState = {
+      activeSubTab: 'api',
+      activeTable: 'users',
+      simulatorInterval: null,
+      simulatorRunning: false
+    };
+
+    // Api config
+    const API_URL = ''; // Same host as app (FastAPI)
+
+    // DOM Elements
+    const views = {
+      auth: document.getElementById('view-auth'),
+      user: document.getElementById('view-user'),
+      admin: document.getElementById('view-admin'),
+      studio: document.getElementById('view-studio'),
+      navProfile: document.getElementById('nav-profile')
+    };
+
+    // Initialize application
+    window.addEventListener('DOMContentLoaded', () => {
+      setupAuthTabToggles();
+      setupFormListeners();
+      setupGlobalListeners();
+      
+      if (state.token) {
+        verifySessionAndLoad();
+      } else {
+        switchView('auth');
+      }
+    });
+
+    // Toggle between Login and Register
+    function setupAuthTabToggles() {
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      const formLogin = document.getElementById('form-login');
+      const formRegister = document.getElementById('form-register');
+
+      tabLogin.addEventListener('click', () => {
+        tabLogin.classList.add('active');
+        tabRegister.classList.remove('active');
+        formLogin.classList.remove('hidden');
+        formRegister.classList.add('hidden');
+      });
+
+      tabRegister.addEventListener('click', () => {
+        tabRegister.classList.add('active');
+        tabLogin.classList.remove('active');
+        formRegister.classList.remove('hidden');
+        formLogin.classList.add('hidden');
+      });
+    }
+
+    // Toast Notification helper
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      const icon = document.getElementById('toast-icon');
+
+      toast.className = `success`; // reset
+      toast.classList.add(type);
+      
+      icon.innerHTML = type === 'success' ? '⚡' : type === 'error' ? '❌' : 'ℹ️';
+      text.innerText = message;
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    // View Routing Helper
+    function switchView(target) {
+      Object.keys(views).forEach(key => {
+        if (key === 'navProfile') return;
+        views[key].classList.add('hidden');
+      });
+      
+      // Update nav link active statuses
+      const btns = ['user', 'admin', 'studio'];
+      btns.forEach(btn => {
+        const el = document.getElementById(`nav-btn-${btn}`);
+        if (el) {
+          if (btn === target) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        }
+      });
+      
+      if (target === 'auth') {
+        views.auth.classList.remove('hidden');
+        views.navProfile.classList.add('hidden');
+        document.getElementById('nav-views-toggle').classList.add('hidden');
+      } else if (target === 'user') {
+        views.user.classList.remove('hidden');
+        views.navProfile.classList.remove('hidden');
+        document.getElementById('nav-role-badge').innerText = 'User';
+        document.getElementById('nav-role-badge').className = 'badge badge-allow';
+        
+        if (state.isAdmin) {
+          document.getElementById('nav-views-toggle').classList.remove('hidden');
+        } else {
+          document.getElementById('nav-views-toggle').classList.add('hidden');
+        }
+      } else if (target === 'admin') {
+        views.admin.classList.remove('hidden');
+        views.navProfile.classList.remove('hidden');
+        document.getElementById('nav-role-badge').innerText = 'Auditor';
+        document.getElementById('nav-role-badge').className = 'badge badge-block';
+        document.getElementById('nav-views-toggle').classList.remove('hidden');
+      } else if (target === 'studio') {
+        views.studio.classList.remove('hidden');
+        views.navProfile.classList.remove('hidden');
+        document.getElementById('nav-role-badge').innerText = 'Developer';
+        document.getElementById('nav-role-badge').className = 'badge badge-allow';
+        document.getElementById('nav-views-toggle').classList.remove('hidden');
+        
+        initStudio();
+      }
+    }
+
+    // API Header helper
+    function getHeaders() {
+      const headers = { 'Content-Type': 'application/json' };
+      if (state.token) {
+        headers['Authorization'] = `Bearer ${state.token}`;
+      }
+      return headers;
+    }
+
+    // Form Event Listeners
+    function setupFormListeners() {
+      // 1. Submit Login
+      document.getElementById('form-login').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        // FastAPI standard oauth2 form expects application/x-www-form-urlencoded format
+        const formData = new URLSearchParams();
+        formData.append('username', email);
+        formData.append('password', password);
+
+        try {
+          const res = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            body: formData
+          });
+
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Authentication failed');
+          }
+
+          const data = await res.json();
+          state.token = data.access_token;
+          state.isAdmin = data.is_admin;
+          localStorage.setItem('bg_token', data.access_token);
+          localStorage.setItem('bg_is_admin', data.is_admin);
+          
+          showToast('Successfully logged in!', 'success');
+          verifySessionAndLoad();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+
+      // 2. Submit Register
+      document.getElementById('form-register').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const home_city = document.getElementById('reg-city').value;
+        const home_country = document.getElementById('reg-country').value;
+        const account_type = document.getElementById('reg-acctype').value;
+        const balance = parseFloat(document.getElementById('reg-balance').value);
+
+        try {
+          const res = await fetch(`${API_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password, home_city, home_country, account_type, balance })
+          });
+
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Registration failed');
+          }
+
+          showToast('Account registered successfully! Please log in.', 'success');
+          // Switch back to login form
+          document.getElementById('tab-login').click();
+          // Populate login email
+          document.getElementById('login-email').value = email;
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+
+      // 3. Process Transaction
+      document.getElementById('form-transaction').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!state.account) {
+          showToast('No active account found for user', 'error');
+          return;
+        }
+
+        const amount = parseFloat(document.getElementById('tx-amount').value);
+        const merchant_name = document.getElementById('tx-merchant').value;
+        const merchant_category = document.getElementById('tx-category').value;
+        const city = document.getElementById('tx-city').value;
+        const country = document.getElementById('tx-country').value;
+        const ip_address = document.getElementById('tx-ip').value;
+        const device_id = document.getElementById('tx-device').value;
+
+        try {
+          const res = await fetch(`${API_URL}/transactions/`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+              account_id: state.account.id,
+              amount,
+              merchant_name,
+              merchant_category,
+              city,
+              country,
+              ip_address,
+              device_id
+            })
+          });
+
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Transaction processing failed');
+          }
+
+          const txResponse = await res.json();
+          const decision = txResponse.decision;
+          
+          if (decision === 'ALLOW') {
+            showToast(`Transaction approved: risk score ${txResponse.risk_score.toFixed(2)}`, 'success');
+          } else if (decision === 'NOTIFY') {
+            showToast(`⚠️ Fraud occurrence flagged!`, 'error');
+          } else if (decision === 'REVIEW') {
+            showToast(`Transaction flagged: Sent to compliance review!`, 'info');
+          } else {
+            showToast(`Transaction BLOCKED: Suspicious velocity or risk markers!`, 'error');
+          }
+
+          // Clear form details and refresh
+          document.getElementById('tx-amount').value = '';
+          document.getElementById('tx-merchant').value = '';
+          
+          // Re-load data
+          loadUserData();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+
+      // 4. Add Fraud Rule
+      const addRuleForm = document.getElementById('form-add-rule');
+      if (addRuleForm) {
+        addRuleForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const code = document.getElementById('rule-code').value.trim();
+          const name = document.getElementById('rule-name').value.trim();
+          const description = document.getElementById('rule-desc').value.trim();
+          const sql_expression = document.getElementById('rule-sql').value.trim();
+          const weight = parseFloat(document.getElementById('rule-weight').value);
+
+          try {
+            const res = await fetch(`${API_URL}/admin/rules`, {
+              method: 'POST',
+              headers: getHeaders(),
+              body: JSON.stringify({ code, name, description, sql_expression, weight })
+            });
+
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.detail || 'Failed to add new rule');
+            }
+
+            showToast(`Rule ${code} added successfully!`, 'success');
+            
+            // Clear form
+            document.getElementById('rule-code').value = '';
+            document.getElementById('rule-name').value = '';
+            document.getElementById('rule-desc').value = '';
+            document.getElementById('rule-sql').value = '';
+            document.getElementById('rule-weight').value = '';
+
+            closeAddRuleModal();
+            loadAdminData();
+          } catch (err) {
+            showToast(err.message, 'error');
+          }
+        });
+      }
+    }
+
+    // Global Action Listeners
+    function setupGlobalListeners() {
+      // Logout Button
+      document.getElementById('btn-logout').addEventListener('click', () => {
+        // Stop simulator if running
+        toggleSimulator(false);
+        const toggleEl = document.getElementById('simulator-toggle');
+        if (toggleEl) toggleEl.checked = false;
+        
+        state.token = null;
+        state.isAdmin = false;
+        state.user = null;
+        state.account = null;
+        localStorage.removeItem('bg_token');
+        localStorage.removeItem('bg_is_admin');
+        switchView('auth');
+        showToast('Logged out successfully', 'info');
+      });
+
+      // Refresh Buttons
+      document.getElementById('btn-refresh-user-tx').addEventListener('click', loadUserData);
+      document.getElementById('btn-refresh-admin').addEventListener('click', loadAdminData);
+    }
+
+    // Load data and authenticate session
+    async function verifySessionAndLoad() {
+      try {
+        // Fetch user accounts to confirm JWT is valid
+        const res = await fetch(`${API_URL}/accounts/me`, {
+          headers: getHeaders()
+        });
+
+        if (!res.ok) {
+          throw new Error('Session expired');
+        }
+
+        const accounts = await res.json();
+        
+        // Save account settings
+        if (accounts && accounts.length > 0) {
+          state.account = accounts[0];
+          // Pre-populate some user values in layout
+          document.getElementById('user-balance-display').innerText = `₹${state.account.balance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+          document.getElementById('user-accnum-display').innerText = `Account Number: ${state.account.account_number}`;
+          document.getElementById('user-display-location').innerText = `${state.account.home_city}, ${state.account.home_country}`;
+        }
+
+        // Fetch User Identity Info
+        // Let's decode the identity or use accounts information
+        if (state.isAdmin) {
+          document.getElementById('nav-user-display').innerText = `Auditor Console`;
+          loadAdminData();
+          switchView('admin');
+        } else {
+          // If normal user
+          document.getElementById('nav-user-display').innerText = `Client Portal`;
+          loadUserData();
+          switchView('user');
+        }
+      } catch (err) {
+        showToast('Authentication check failed. Please log in.', 'error');
+        state.token = null;
+        state.isAdmin = false;
+        localStorage.removeItem('bg_token');
+        localStorage.removeItem('bg_is_admin');
+        switchView('auth');
+      }
+    }
+
+    // Load user data (user transactions list)
+    async function loadUserData() {
+      try {
+        // Reload account balance
+        const accRes = await fetch(`${API_URL}/accounts/me`, { headers: getHeaders() });
+        if (accRes.ok) {
+          const accounts = await accRes.json();
+          if (accounts.length > 0) {
+            state.account = accounts[0];
+            document.getElementById('user-balance-display').innerText = `₹${state.account.balance.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+          }
+        }
+
+        const res = await fetch(`${API_URL}/transactions/`, {
+          headers: getHeaders()
+        });
+
+        if (!res.ok) throw new Error('Could not retrieve transaction logs');
+
+        state.userTransactions = await res.json();
+        renderUserTransactions();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Render user transaction list
+    function renderUserTransactions() {
+      const container = document.getElementById('user-tx-list');
+      container.innerHTML = '';
+
+      if (state.userTransactions.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: var(--text-dark); padding: 40px 0;">
+            No transactions recorded yet. Submit your first above!
+          </div>
+        `;
+        return;
+      }
+
+      state.userTransactions.forEach(tx => {
+        const item = document.createElement('div');
+        item.className = 'transaction-item';
+        item.onclick = () => openUserTxModal(tx);
+
+        const date = new Date(tx.timestamp).toLocaleString('en-IN', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        });
+
+        const badgeClass = tx.decision === 'ALLOW' ? 'badge-allow' : tx.decision === 'NOTIFY' ? 'badge-notify' : tx.decision === 'REVIEW' ? 'badge-review' : 'badge-block';
+
+        item.innerHTML = `
+          <div class="tx-left">
+            <span class="tx-merchant">${tx.merchant_name}</span>
+            <div class="tx-details">
+              <span class="badge ${badgeClass}">${tx.decision}</span>
+              <span>•</span>
+              <span style="text-transform: capitalize;">${tx.merchant_category}</span>
+              <span>•</span>
+              <span>${date}</span>
+            </div>
+          </div>
+          <div class="tx-right">
+            <span class="tx-amount">₹${tx.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Risk: ${tx.risk_score.toFixed(2)}</span>
+          </div>
+        `;
+
+        container.appendChild(item);
+      });
+    }
+
+    // User Transaction modal open
+    async function openUserTxModal(tx) {
+      document.getElementById('modal-merchant').innerText = tx.merchant_name;
+      document.getElementById('modal-datetime').innerText = new Date(tx.timestamp).toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'medium' });
+      document.getElementById('modal-amount').innerText = `₹${tx.amount.toLocaleString('en-IN')}`;
+      
+      const badge = document.getElementById('modal-badge');
+      badge.innerText = tx.decision;
+      badge.className = `badge ${tx.decision === 'ALLOW' ? 'badge-allow' : tx.decision === 'NOTIFY' ? 'badge-notify' : tx.decision === 'REVIEW' ? 'badge-review' : 'badge-block'}`;
+
+      document.getElementById('modal-location').innerText = `${tx.city}, ${tx.country}`;
+      document.getElementById('modal-risk-val').innerText = tx.risk_score.toFixed(2);
+      
+      const fillBar = document.getElementById('modal-risk-bar');
+      fillBar.style.width = `${tx.risk_score * 100}%`;
+      fillBar.style.background = tx.risk_score < 0.3 ? 'var(--color-primary)' : tx.risk_score < 0.65 ? 'var(--color-warning)' : 'var(--color-danger)';
+
+      // Fetch specific rules triggered detail (Fraud events linked to this transaction)
+      const rulesList = document.getElementById('modal-rules-list');
+      rulesList.innerHTML = `<div style="color: var(--text-dark); font-size: 0.85rem;">Analysing engine logs...</div>`;
+      
+      document.getElementById('user-tx-modal').classList.remove('hidden');
+
+      try {
+        // Query database triggers log via admin route if permitted, or reconstruct from flags
+        // Since user might not have admin rights, we retrieve rules from the transaction itself (tx.fraud_flags is a list)
+        const flags = tx.fraud_flags || [];
+        
+        if (flags.length === 0) {
+          rulesList.innerHTML = `
+            <div style="padding: 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: var(--radius-md); color: var(--color-primary); font-size: 0.85rem;">
+              ✓ Clean transaction. No database rules flagged.
+            </div>
+          `;
+          return;
+        }
+
+        rulesList.innerHTML = '';
+        flags.forEach(flag => {
+          const ruleItem = document.createElement('div');
+          
+          let severityClass = 'rule-warning';
+          let icon = '⚠️';
+          let details = 'Database rule violation details';
+
+          if (flag === 'VEL-01') details = 'High frequency: 5 or more transactions inside an hour range.';
+          else if (flag === 'VEL-TEST-01') details = 'Amount exceeds ₹10,000 threshold velocity limits.';
+          else if (flag === 'LOC-01') details = `Transaction location country (${tx.country}) differs from registered Home Country.`;
+          else if (flag === 'THR-01') details = 'Single transaction amount exceeded critical ₹50,000 threshold limits.';
+          else if (flag === 'BEH-01') details = `High risk business category categorised under: ${tx.merchant_category}`;
+          else if (flag === 'DEV-01') details = `Transaction initiated from unrecognized or new Device ID (${tx.device_id}).`;
+          else if (flag === 'VEL-HIGH-FREQ') details = 'Burst rate limit: 3 transactions within 10 seconds.';
+          else if (flag === 'THR-NORM-EXCEED') details = 'Transaction exceeds 3x typical average spending norms.';
+          else if (flag === 'BEH-MICRO-TEST') details = 'Card testing sequence: Small purchase followed immediately by a large volume transfer.';
+          else if (flag === 'LOC-NEW-COUNTRY') details = `Transaction from a country (${tx.country}) never seen in account history.`;
+          else if (flag === 'DEV-MULTI-ACCOUNT') details = 'Device sharing spoof: This device ID is shared across multiple bank accounts.';
+
+          ruleItem.className = `fraud-rule-item ${flag === 'THR-01' || flag === 'LOC-01' ? '' : 'rule-warning'}`;
+          ruleItem.innerHTML = `
+            <div class="rule-title">
+              <span>${icon}</span>
+              <span>${flag}</span>
+            </div>
+            <div class="rule-details">${details}</div>
+          `;
+          rulesList.appendChild(ruleItem);
+        });
+      } catch (err) {
+        rulesList.innerHTML = `<div style="color: var(--color-danger); font-size: 0.85rem;">Failed to fetch trigger logs.</div>`;
+      }
+    }
+
+    function closeUserTxModal() {
+      document.getElementById('user-tx-modal').classList.add('hidden');
+    }
+
+    function openAddRuleModal() {
+      document.getElementById('add-rule-modal').classList.remove('hidden');
+    }
+
+    function closeAddRuleModal() {
+      document.getElementById('add-rule-modal').classList.add('hidden');
+    }
+
+    // Load admin dashboard statistics and logs
+    async function loadAdminData() {
+      try {
+        const txRes = await fetch(`${API_URL}/admin/transactions`, { headers: getHeaders() });
+        const eventRes = await fetch(`${API_URL}/admin/fraud-events`, { headers: getHeaders() });
+        const rulesRes = await fetch(`${API_URL}/admin/rules`, { headers: getHeaders() });
+
+        if (!txRes.ok || !eventRes.ok || !rulesRes.ok) {
+          throw new Error('Admin queries failed. Check your privileges.');
+        }
+
+        state.adminTransactions = await txRes.json();
+        state.adminFraudEvents = await eventRes.json();
+        state.rules = await rulesRes.json();
+
+        calculateAdminKPIs();
+        renderAdminTransactions();
+        renderRules();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Calculate admin dashboard metrics
+    function calculateAdminKPIs() {
+      const txs = state.adminTransactions;
+      
+      const count = txs.length;
+      document.getElementById('kpi-tx-count').innerText = count;
+
+      const volume = txs.reduce((acc, tx) => acc + tx.amount, 0);
+      document.getElementById('kpi-tx-volume').innerText = `₹${volume.toLocaleString('en-IN', {maximumFractionDigits: 0})}`;
+
+      const alerts = txs.filter(tx => tx.decision === 'REVIEW' || tx.decision === 'NOTIFY').length;
+      document.getElementById('kpi-tx-alerts').innerText = alerts;
+
+      const blocked = txs.filter(tx => tx.decision === 'BLOCK').length;
+      document.getElementById('kpi-tx-blocked').innerText = blocked;
+    }
+
+    // Filter Admin Transactions
+    function filterAdminTransactions(filterType) {
+      state.adminFilter = filterType;
+      // Highlight correct tab
+      const tabs = document.querySelectorAll('.filter-tab');
+      tabs.forEach(tab => {
+        const text = tab.innerText.toUpperCase();
+        if (filterType === 'ALL' && text.includes('ALL')) {
+          tab.classList.add('active');
+        } else if (filterType === 'FLAGGED' && text.includes('FLAGGED')) {
+          tab.classList.add('active');
+        } else if (filterType === 'BLOCKED' && text.includes('BLOCKED')) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+      renderAdminTransactions();
+    }
+
+    // Search Admin Transactions
+    function handleAdminSearch() {
+      state.adminSearchQuery = document.getElementById('admin-search-input').value.toLowerCase();
+      renderAdminTransactions();
+    }
+
+    // Render admin transactions log feed
+    function renderAdminTransactions() {
+      const container = document.getElementById('admin-tx-list');
+      container.innerHTML = '';
+
+      // Only show flagged (NOTIFY, REVIEW) and blocked (BLOCK) transactions
+      let filtered = state.adminTransactions.filter(tx => tx.decision !== 'ALLOW');
+
+      // Filter state
+      if (state.adminFilter === 'BLOCKED') {
+        filtered = filtered.filter(tx => tx.decision === 'BLOCK');
+      } else if (state.adminFilter === 'FLAGGED') {
+        filtered = filtered.filter(tx => tx.decision === 'NOTIFY' || tx.decision === 'REVIEW');
+      }
+
+      // Search state
+      if (state.adminSearchQuery) {
+        filtered = filtered.filter(tx => 
+          tx.merchant_name.toLowerCase().includes(state.adminSearchQuery) ||
+          tx.user_name?.toLowerCase().includes(state.adminSearchQuery) ||
+          tx.user_email?.toLowerCase().includes(state.adminSearchQuery) ||
+          tx.country.toLowerCase().includes(state.adminSearchQuery)
+        );
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: var(--text-dark); padding: 40px 0;">
+            No transactions match current filters.
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(tx => {
+        const item = document.createElement('div');
+        item.className = `transaction-item ${state.selectedAdminTxId === tx.id ? 'active' : ''}`;
+        
+        // Highlight active item border
+        if (state.selectedAdminTxId === tx.id) {
+          item.style.borderColor = 'var(--color-info)';
+          item.style.background = 'rgba(59, 130, 246, 0.08)';
+        }
+
+        item.onclick = () => selectAdminTransaction(tx);
+
+        const date = new Date(tx.timestamp).toLocaleString('en-IN', {
+          dateStyle: 'medium',
+          timeStyle: 'short'
+        });
+
+        const badgeClass = tx.decision === 'ALLOW' ? 'badge-allow' : tx.decision === 'NOTIFY' ? 'badge-notify' : tx.decision === 'REVIEW' ? 'badge-review' : 'badge-block';
+
+        item.innerHTML = `
+          <div class="tx-left">
+            <span class="tx-merchant">${tx.merchant_name}</span>
+            <div class="tx-details">
+              <span class="badge ${badgeClass}">${tx.decision}</span>
+              <span style="color: var(--text-main); font-weight: 500;">${tx.user_name || 'System User'}</span>
+              <span>•</span>
+              <span>${date}</span>
+            </div>
+          </div>
+          <div class="tx-right">
+            <span class="tx-amount">₹${tx.amount.toLocaleString('en-IN')}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Risk: ${tx.risk_score.toFixed(2)}</span>
+          </div>
+        `;
+
+        container.appendChild(item);
+      });
+    }
+
+    // Select transaction for admin inspector
+    function selectAdminTransaction(tx) {
+      state.selectedAdminTxId = tx.id;
+      
+      // Update highlights in list
+      renderAdminTransactions();
+
+      // Show details block
+      document.getElementById('inspector-placeholder').classList.add('hidden');
+      const details = document.getElementById('inspector-details');
+      details.classList.remove('hidden');
+
+      // Populate details
+      document.getElementById('inspect-user-name').innerText = tx.user_name || 'System User';
+      document.getElementById('inspect-user-email').innerText = tx.user_email || 'No email';
+      document.getElementById('inspect-user-acc').innerText = `Account: ${tx.account_number || 'BG-----'}`;
+      document.getElementById('inspect-amount').innerText = `₹${tx.amount.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+      
+      const badge = document.getElementById('inspect-badge');
+      badge.innerText = tx.decision;
+      badge.className = `badge ${tx.decision === 'ALLOW' ? 'badge-allow' : tx.decision === 'NOTIFY' ? 'badge-notify' : tx.decision === 'REVIEW' ? 'badge-review' : 'badge-block'}`;
+
+      document.getElementById('inspect-risk-val').innerText = tx.risk_score.toFixed(2);
+      
+      const fillBar = document.getElementById('inspect-risk-bar');
+      fillBar.style.width = `${tx.risk_score * 100}%`;
+      fillBar.style.background = tx.risk_score < 0.3 ? 'var(--color-primary)' : tx.risk_score < 0.65 ? 'var(--color-warning)' : 'var(--color-danger)';
+
+      document.getElementById('inspect-location').innerText = `${tx.city}, ${tx.country}`;
+      document.getElementById('inspect-category').innerText = tx.merchant_category;
+      document.getElementById('inspect-ip').innerText = tx.ip_address;
+      document.getElementById('inspect-device').innerText = tx.device_id;
+
+      // Populate triggered rules audit list (from fraud_events)
+      const rulesList = document.getElementById('inspect-rules-list');
+      rulesList.innerHTML = '';
+
+      // Find events linked to this transaction id from state.adminFraudEvents
+      const events = state.adminFraudEvents.filter(e => e.transaction_id === tx.id);
+
+      if (events.length === 0) {
+        rulesList.innerHTML = `
+          <div style="padding: 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: var(--radius-md); color: var(--color-primary); font-size: 0.85rem;">
+            ✓ Clean transaction. No fraud events persisted.
+          </div>
+        `;
+        return;
+      }
+
+      events.forEach(e => {
+        const item = document.createElement('div');
+        item.className = 'fraud-rule-item';
+        // Red color for blocked actions, orange for review
+        if (tx.decision === 'ALLOW' || tx.decision === 'NOTIFY') item.className += ' rule-warning';
+        
+        item.innerHTML = `
+          <div class="rule-title">
+            <span>🚨</span>
+            <span>${e.rule_triggered} [${e.severity}]</span>
+          </div>
+          <div class="rule-details">${e.details}</div>
+        `;
+        rulesList.appendChild(item);
+      });
+    }
+
+    // Render fraud rules in management catalog
+    function renderRules() {
+      const container = document.getElementById('admin-rules-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!state.rules || state.rules.length === 0) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-dark); padding: 20px 0; grid-column: 1/-1;">No rules defined in the engine.</div>`;
+        return;
+      }
+
+      const DEFAULT_RULES = new Set([
+        'VEL-01', 'VEL-TEST-01', 'LOC-01', 'THR-01', 'BEH-01', 'DEV-01',
+        'VEL-HIGH-FREQ', 'THR-NORM-EXCEED', 'BEH-MICRO-TEST', 'LOC-NEW-COUNTRY',
+        'DEV-MULTI-ACCOUNT', 'REP-AMT'
+      ]);
+
+      state.rules.forEach(rule => {
+        const isDefault = DEFAULT_RULES.has(rule.code);
+        const card = document.createElement('div');
+        card.className = 'rule-card';
+        
+        card.innerHTML = `
+          <div class="rule-card-header">
+            <span class="rule-code" style="font-family: var(--font-outfit); font-weight: 700; color: var(--text-main);">${rule.code}</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Wt: ${rule.weight.toFixed(2)}</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-weight: 600; color: var(--text-main); font-size: 0.85rem; margin-bottom: 2px;">${rule.name}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.3;">${rule.description || ''}</div>
+          </div>
+          <div class="rule-sql">${rule.sql_expression}</div>
+          ${!isDefault ? `
+            <div style="text-align: right; margin-top: auto; padding-top: 4px;">
+              <button class="btn btn-danger btn-sm" onclick="deleteRule('${rule.code}')" style="padding: 4px 10px; font-size: 0.75rem;">Delete</button>
+            </div>
+          ` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Toggle rule active status
+    async function toggleRule(code) {
+      try {
+        const res = await fetch(`${API_URL}/admin/rules/${code}/toggle`, {
+          method: 'PUT',
+          headers: getHeaders()
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || 'Failed to toggle rule');
+        }
+        showToast(`Rule ${code} toggled successfully`, 'success');
+        loadAdminData();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Delete custom rule
+    async function deleteRule(code) {
+      if (!confirm(`Are you sure you want to delete custom rule ${code}?`)) return;
+      try {
+        const res = await fetch(`${API_URL}/admin/rules/${code}`, {
+          method: 'DELETE',
+          headers: getHeaders()
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || 'Failed to delete rule');
+        }
+        showToast(`Rule ${code} deleted successfully`, 'success');
+        loadAdminData();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Helper to autofill forms with mock transaction triggers
+    function fillScenario(scenario) {
+      const amountEl = document.getElementById('tx-amount');
+      const merchantEl = document.getElementById('tx-merchant');
+      const categoryEl = document.getElementById('tx-category');
+      const cityEl = document.getElementById('tx-city');
+      const countryEl = document.getElementById('tx-country');
+      const ipEl = document.getElementById('tx-ip');
+      const deviceEl = document.getElementById('tx-device');
+
+      // Default home coordinates for registered account are Kozhikode, India (or whatever the registration was)
+      // Let's assume Mumbai, India is user city
+      
+      if (scenario === 'normal') {
+        amountEl.value = '250';
+        merchantEl.value = 'Starbucks Coffee';
+        categoryEl.value = 'coffee';
+        cityEl.value = 'Mumbai';
+        countryEl.value = 'India';
+        ipEl.value = '192.168.1.5';
+        deviceEl.value = 'alices_macbook_pro';
+        showToast('Autofilled scenario: Normal Transaction (ALLOW)', 'info');
+      } 
+      else if (scenario === 'location') {
+        amountEl.value = '850';
+        merchantEl.value = 'Dubai Mall Cafe';
+        categoryEl.value = 'food';
+        cityEl.value = 'Dubai';
+        countryEl.value = 'UAE';
+        ipEl.value = '185.12.5.4';
+        deviceEl.value = 'alices_macbook_pro';
+        showToast('Autofilled scenario: Mismatch Location (LOC-01 Alert)', 'info');
+      } 
+      else if (scenario === 'threshold') {
+        amountEl.value = '75000';
+        merchantEl.value = 'Gold & Gems Jewellers';
+        categoryEl.value = 'jewelry';
+        cityEl.value = 'Mumbai';
+        countryEl.value = 'India';
+        ipEl.value = '192.168.1.5';
+        deviceEl.value = 'alices_macbook_pro';
+        showToast('Autofilled scenario: High Threshold Limit (THR-01 & BEH-01 Alert)', 'info');
+      } 
+      else if (scenario === 'crypto') {
+        amountEl.value = '9800';
+        merchantEl.value = 'Binance Exchange';
+        categoryEl.value = 'crypto';
+        cityEl.value = 'Mumbai';
+        countryEl.value = 'India';
+        ipEl.value = '192.168.1.5';
+        deviceEl.value = 'alices_macbook_pro';
+        showToast('Autofilled scenario: Anomalous Crypto Category (BEH-01 Alert)', 'info');
+      }
+      else if (scenario === 'device') {
+        amountEl.value = '120';
+        merchantEl.value = 'App Store purchase';
+        categoryEl.value = 'digital';
+        cityEl.value = 'Mumbai';
+        countryEl.value = 'India';
+        ipEl.value = '192.168.1.23';
+        deviceEl.value = 'untrusted_android_spoof';
+        showToast('Autofilled scenario: Untrusted Device (DEV-01 Alert)', 'info');
+      }
+    }
+
+    // --- Developer & DB Studio Frontend Scripting ---
+
+    const TABLE_COLUMNS = {
+      users: ['name', 'email', 'password', 'is_admin'],
+      accounts: ['user_id', 'account_number', 'balance', 'account_type', 'home_city', 'home_country'],
+      transactions: ['account_id', 'amount', 'merchant_name', 'merchant_category', 'city', 'country', 'ip_address', 'device_id'],
+      fraud_rules: ['code', 'name', 'description', 'sql_expression', 'weight', 'is_active'],
+      fraud_events: ['transaction_id', 'rule_triggered', 'severity', 'details'],
+      device_logs: ['account_id', 'device_id', 'ip_address']
+    };
+
+    async function initStudio() {
+      // Populate account binding select dropdown
+      await populateStudioAccountSelect();
+      // Populate grid table select data
+      await loadStudioTableData(studioState.activeTable);
+      // Pre-load default payload
+      loadPresetPayload('normal');
+      // Fetch dynamic webhook settings
+      await fetchWebhookSettings();
+    }
+
+    function switchStudioSubTab(tab) {
+      studioState.activeSubTab = tab;
+      
+      const tabApi = document.getElementById('studio-tab-api');
+      const tabDb = document.getElementById('studio-tab-db');
+      
+      const btnApi = document.getElementById('btn-studio-tab-api');
+      const btnDb = document.getElementById('btn-studio-tab-db');
+      
+      if (tab === 'api') {
+        tabApi.classList.remove('hidden');
+        tabDb.classList.add('hidden');
+        btnApi.classList.add('active');
+        btnDb.classList.remove('active');
+      } else {
+        tabApi.classList.add('hidden');
+        tabDb.classList.remove('hidden');
+        btnApi.classList.remove('active');
+        btnDb.classList.add('active');
+        refreshActiveStudioTable();
+      }
+    }
+
+    async function populateStudioAccountSelect() {
+      const selectEl = document.getElementById('studio-bind-account');
+      if (!selectEl) return;
+      
+      try {
+        const res = await fetch(`${API_URL}/dev/db/tables/accounts`, { headers: getHeaders() });
+        if (!res.ok) throw new Error('Failed to fetch accounts');
+        const accounts = await res.json();
+        
+        const usersRes = await fetch(`${API_URL}/dev/db/tables/users`, { headers: getHeaders() });
+        const users = usersRes.ok ? await usersRes.json() : [];
+        const userMap = {};
+        users.forEach(u => { userMap[u.id] = u.name; });
+        
+        selectEl.innerHTML = '';
+        accounts.forEach(acc => {
+          const owner = userMap[acc.user_id] || 'Unknown';
+          const option = document.createElement('option');
+          option.value = acc.id;
+          option.dataset.number = acc.account_number;
+          option.dataset.city = acc.home_city || 'Mumbai';
+          option.dataset.country = acc.home_country || 'India';
+          option.innerText = `${acc.account_number} (${owner}) - Bal: ₹${acc.balance}`;
+          selectEl.appendChild(option);
+        });
+      } catch (err) {
+        console.error('Error populating studio accounts:', err);
+      }
+    }
+
+    function bindAccountToPayload() {
+      const selectEl = document.getElementById('studio-bind-account');
+      const option = selectEl.options[selectEl.selectedIndex];
+      if (!option) return;
+      
+      const accountId = parseInt(selectEl.value);
+      const city = option.dataset.city;
+      const country = option.dataset.country;
+      
+      try {
+        const bodyText = document.getElementById('studio-req-body').value;
+        const payload = JSON.parse(bodyText);
+        payload.account_id = accountId;
+        
+        if (document.getElementById('studio-payload-preset').value === 'normal') {
+          payload.city = city;
+          payload.country = country;
+        }
+        
+        document.getElementById('studio-req-body').value = JSON.stringify(payload, null, 2);
+      } catch (e) {
+        // Ignore JSON errors while typing
+      }
+    }
+
+    function loadPresetPayload(preset) {
+      const selectEl = document.getElementById('studio-bind-account');
+      const accountId = selectEl && selectEl.value ? parseInt(selectEl.value) : 1;
+      
+      let city = 'Mumbai';
+      let country = 'India';
+      if (selectEl && selectEl.selectedIndex >= 0) {
+        const option = selectEl.options[selectEl.selectedIndex];
+        city = option.dataset.city || 'Mumbai';
+        country = option.dataset.country || 'India';
+      }
+      
+      let payload = {
+        account_id: accountId,
+        amount: 150.0,
+        merchant_name: 'Local Coffee Shop',
+        merchant_category: 'coffee',
+        city: city,
+        country: country,
+        ip_address: '192.168.1.15',
+        device_id: 'trusted_device_abc'
+      };
+      
+      if (preset === 'location') {
+        payload.amount = 450.0;
+        payload.merchant_name = 'Dubai Mall Store';
+        payload.merchant_category = 'shopping';
+        payload.city = 'Dubai';
+        payload.country = 'UAE';
+        payload.ip_address = '185.15.24.2';
+      } else if (preset === 'threshold') {
+        payload.amount = 85000.0;
+        payload.merchant_name = 'Luxury Jewelry Boutique';
+        payload.merchant_category = 'jewelry';
+        payload.city = city;
+        payload.country = country;
+      } else if (preset === 'crypto') {
+        payload.amount = 12000.0;
+        payload.merchant_name = 'Binance Exchange';
+        payload.merchant_category = 'crypto';
+        payload.city = city;
+        payload.country = country;
+      } else if (preset === 'device') {
+        payload.amount = 80.0;
+        payload.merchant_name = 'App Store Purchases';
+        payload.merchant_category = 'digital';
+        payload.city = city;
+        payload.country = country;
+        payload.device_id = 'unrecognized_spoofed_device';
+      } else if (preset === 'velocity') {
+        payload.amount = 200.0;
+        payload.merchant_name = 'Fast Food Cafe';
+        payload.merchant_category = 'food';
+        payload.city = city;
+        payload.country = country;
+      }
+      
+      document.getElementById('studio-req-body').value = JSON.stringify(payload, null, 2);
+    }
+
+    async function sendStudioTransaction() {
+      const bodyText = document.getElementById('studio-req-body').value;
+      const resConsole = document.getElementById('studio-res-body');
+      const resStatus = document.getElementById('studio-res-status');
+      const resTime = document.getElementById('studio-res-time');
+      const analysisDiv = document.getElementById('studio-res-analysis');
+      
+      resConsole.innerText = 'Executing transaction request...';
+      analysisDiv.classList.add('hidden');
+      
+      const startTime = performance.now();
+      
+      try {
+        const res = await fetch(`${API_URL}/transactions/`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: bodyText
+        });
+        
+        const endTime = performance.now();
+        const duration = (endTime - startTime).toFixed(0) + ' ms';
+        resTime.innerText = duration;
+        
+        const statusText = `${res.status} ${res.statusText || (res.status === 200 ? 'OK' : res.status === 422 ? 'Unprocessable Entity' : '')}`;
+        resStatus.innerText = statusText;
+        resStatus.style.color = res.ok ? 'var(--color-primary)' : 'var(--color-danger)';
+        
+        const data = await res.json();
+        resConsole.innerText = JSON.stringify(data, null, 2);
+        
+        if (res.ok) {
+          analysisDiv.classList.remove('hidden');
+          const decision = data.decision || 'ALLOW';
+          const badge = document.getElementById('studio-res-badge');
+          badge.innerText = decision;
+          badge.className = `badge ${decision === 'ALLOW' ? 'badge-allow' : decision === 'NOTIFY' ? 'badge-notify' : decision === 'REVIEW' ? 'badge-review' : 'badge-block'}`;
+          
+          const riskScore = data.risk_score || 0;
+          document.getElementById('studio-res-risk-val').innerText = riskScore.toFixed(2);
+          
+          const fillBar = document.getElementById('studio-res-risk-bar');
+          fillBar.style.width = `${riskScore * 100}%`;
+          fillBar.style.background = riskScore < 0.3 ? 'var(--color-primary)' : riskScore < 0.65 ? 'var(--color-warning)' : 'var(--color-danger)';
+          
+          const rulesList = document.getElementById('studio-res-rules-list');
+          rulesList.innerHTML = '';
+          
+          const triggered = data.triggered_rules || [];
+          if (triggered.length === 0) {
+            rulesList.innerHTML = `<div style="font-size: 0.8rem; color: var(--color-primary);">✓ Clean transaction. No database rules flagged.</div>`;
+          } else {
+            triggered.forEach(ruleCode => {
+              const detail = data.details?.[ruleCode] || `Triggered ${ruleCode}`;
+              const item = document.createElement('div');
+              item.className = `fraud-rule-item rule-warning`;
+              item.style.padding = '6px 8px';
+              item.style.margin = '0';
+              item.innerHTML = `
+                <div class="rule-title" style="margin: 0; font-size: 0.8rem;">🚨 ${ruleCode}</div>
+                <div class="rule-details" style="font-size: 0.75rem;">${detail}</div>
+              `;
+              rulesList.appendChild(item);
+            });
+          }
+          
+          appendSimulatorLog(JSON.parse(bodyText), data);
+        }
+      } catch (err) {
+        resConsole.innerText = `Network Error: ${err.message}`;
+        resStatus.innerText = 'FAIL';
+        resStatus.style.color = 'var(--color-danger)';
+      }
+    }
+
+    function appendSimulatorLog(req, res) {
+      const stream = document.getElementById('simulator-log-stream');
+      if (!stream) return;
+      
+      const time = new Date().toLocaleTimeString();
+      const isFraud = res.decision !== 'ALLOW';
+      const color = isFraud ? '#ef4444' : '#10b981';
+      const border = isFraud ? 'border-left: 3px solid #ef4444;' : 'border-left: 3px solid #10b981;';
+      
+      if (stream.children.length === 1 && stream.children[0].style.color === 'rgb(100, 116, 139)') {
+        stream.innerHTML = '';
+      }
+      
+      const item = document.createElement('div');
+      item.style = `padding: 6px 10px; margin-bottom: 6px; background: rgba(30, 41, 59, 0.6); border-radius: 4px; ${border}`;
+      item.innerHTML = `
+        <span style="color: #64748b;">[${time}]</span> 
+        <span style="font-weight: 700; color: ${color};">${res.decision}</span> | 
+        <span>Amt: ₹${req.amount}</span> | 
+        <span>Merchant: ${req.merchant_name}</span> | 
+        <span>Score: ${res.risk_score?.toFixed(2) || '0.00'}</span> 
+        ${res.triggered_rules?.length ? `| <span style="color: #f59e0b;">Rules: ${res.triggered_rules.join(', ')}</span>` : ''}
+      `;
+      stream.prepend(item);
+    }
+
+    function toggleSimulator(active) {
+      const statusDot = document.getElementById('simulator-status-dot');
+      studioState.simulatorRunning = active;
+      
+      if (active) {
+        statusDot.style.backgroundColor = 'var(--color-primary)';
+        showToast('Live traffic generator started', 'success');
+        
+        studioState.simulatorInterval = setInterval(async () => {
+          const presets = ['normal', 'normal', 'normal', 'location', 'threshold', 'crypto', 'device', 'velocity'];
+          const randomPreset = presets[Math.floor(Math.random() * presets.length)];
+          
+          loadPresetPayload(randomPreset);
+          
+          try {
+            const bodyText = document.getElementById('studio-req-body').value;
+            const payload = JSON.parse(bodyText);
+            payload.amount = Math.round(payload.amount * (0.8 + Math.random() * 0.4) * 10) / 10;
+            
+            if (Math.random() < 0.3) {
+              payload.ip_address = `192.168.1.${Math.floor(Math.random() * 250)}`;
+              payload.device_id = `dev_${Math.random().toString(36).substring(2, 8)}`;
+            }
+            
+            document.getElementById('studio-req-body').value = JSON.stringify(payload, null, 2);
+            await sendStudioTransaction();
+          } catch (e) {
+            console.error('Simulator JSON error:', e);
+          }
+        }, 4000);
+      } else {
+        statusDot.style.backgroundColor = 'var(--text-dark)';
+        showToast('Live traffic generator stopped', 'info');
+        if (studioState.simulatorInterval) {
+          clearInterval(studioState.simulatorInterval);
+          studioState.simulatorInterval = null;
+        }
+      }
+    }
+
+    async function loadStudioTableData(tableName) {
+      studioState.activeTable = tableName;
+      
+      const grid = document.getElementById('studio-db-grid');
+      const thead = grid.querySelector('thead');
+      const tbody = grid.querySelector('tbody');
+      
+      thead.innerHTML = '<tr><th class="db-grid-th">Loading data...</th></tr>';
+      tbody.innerHTML = '';
+      
+      try {
+        const res = await fetch(`${API_URL}/dev/db/tables/${tableName}`, { headers: getHeaders() });
+        if (!res.ok) throw new Error(`Failed to fetch ${tableName} records`);
+        const rows = await res.json();
+        
+        if (rows.length === 0) {
+          thead.innerHTML = '<tr><th class="db-grid-th">Empty Table</th></tr>';
+          tbody.innerHTML = `<tr><td class="db-grid-td" style="text-align: center; color: var(--text-dark); padding: 40px 0;">No records found in this table.</td></tr>`;
+          return;
+        }
+        
+        const columns = Object.keys(rows[0]);
+        
+        let headerHtml = '<tr>';
+        columns.forEach(col => {
+          headerHtml += `<th class="db-grid-th">${col}</th>`;
+        });
+        headerHtml += `<th class="db-grid-th" style="text-align: right;">Actions</th>`;
+        headerHtml += '</tr>';
+        thead.innerHTML = headerHtml;
+        
+        let rowsHtml = '';
+        rows.forEach(row => {
+          let rowHtml = `<tr class="db-grid-row" id="studio-row-${tableName}-${row.id || row.code}">`;
+          columns.forEach(col => {
+            let val = row[col];
+            if (val === null || val === undefined) {
+              val = '<span style="color: var(--text-dark); font-style: italic;">null</span>';
+            } else if (typeof val === 'object') {
+              val = `<span style="font-family: monospace; font-size: 0.75rem;">${JSON.stringify(val)}</span>`;
+            } else if (typeof val === 'boolean') {
+              val = val ? '🟢 true' : '🔴 false';
+            }
+            rowHtml += `<td class="db-grid-td">${val}</td>`;
+          });
+          
+          const rowIdStr = row.id !== undefined ? row.id : `'${row.code}'`;
+          const escRow = JSON.stringify(row).replace(/"/g, '&quot;');
+          
+          rowHtml += `
+            <td class="db-grid-td" style="text-align: right; white-space: nowrap;">
+              <button class="btn btn-secondary btn-sm" style="padding: 2px 6px; font-size: 0.75rem; margin-right: 4px;" onclick="openEditRowModal('${tableName}', ${rowIdStr}, '${escRow}')">Edit</button>
+              <button class="btn btn-danger btn-sm" style="padding: 2px 6px; font-size: 0.75rem;" onclick="deleteStudioRow('${tableName}', ${rowIdStr})">Del</button>
+            </td>
+          `;
+          rowHtml += '</tr>';
+          rowsHtml += rowHtml;
+        });
+        tbody.innerHTML = rowsHtml;
+      } catch (err) {
+        thead.innerHTML = '<tr><th class="db-grid-th">Error</th></tr>';
+        tbody.innerHTML = `<tr><td class="db-grid-td" style="color: var(--color-danger);">${err.message}</td></tr>`;
+      }
+    }
+
+    async function deleteStudioRow(tableName, rowId) {
+      if (!confirm(`Are you sure you want to delete record ${rowId} from ${tableName}?`)) return;
+      
+      try {
+        const res = await fetch(`${API_URL}/dev/db/tables/${tableName}/${rowId}`, {
+          method: 'DELETE',
+          headers: getHeaders()
+        });
+        
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || 'Failed to delete row');
+        }
+        
+        showToast(`Record ${rowId} deleted from ${tableName}`, 'success');
+        loadStudioTableData(tableName);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function refreshActiveStudioTable() {
+      const select = document.getElementById('studio-db-table-select');
+      if (select) {
+        loadStudioTableData(select.value);
+      }
+    }
+
+    function openEditRowModal(tableName, rowId, rowJsonEsc) {
+      const row = JSON.parse(rowJsonEsc.replace(/&quot;/g, '"'));
+      
+      document.getElementById('studio-edit-row-id').value = rowId;
+      document.getElementById('studio-edit-row-desc').innerText = `Editing row ID ${rowId} in table ${tableName}`;
+      
+      const fieldsContainer = document.getElementById('studio-edit-row-fields');
+      fieldsContainer.innerHTML = '';
+      
+      const columns = TABLE_COLUMNS[tableName] || Object.keys(row);
+      columns.forEach(col => {
+        if (col === 'id' || col === 'timestamp' || col === 'created_at') return;
+        
+        const group = document.createElement('div');
+        group.className = 'form-group';
+        group.style.marginBottom = '12px';
+        
+        const label = document.createElement('label');
+        label.innerText = col;
+        label.style.fontWeight = '600';
+        
+        let input;
+        const currentVal = row[col] !== null ? row[col] : '';
+        
+        if (col === 'is_admin' || col === 'is_active') {
+          input = document.createElement('select');
+          input.className = 'form-control';
+          input.innerHTML = `
+            <option value="true" ${currentVal === true ? 'selected' : ''}>True</option>
+            <option value="false" ${currentVal === false ? 'selected' : ''}>False</option>
+          `;
+        } else if (col === 'balance' || col === 'amount' || col === 'weight' || col === 'user_id' || col === 'account_id' || col === 'transaction_id') {
+          input = document.createElement('input');
+          input.type = 'number';
+          input.step = 'any';
+          input.className = 'form-control';
+          input.value = currentVal;
+        } else {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'form-control';
+          input.value = typeof currentVal === 'object' ? JSON.stringify(currentVal) : currentVal;
+        }
+        
+        input.name = col;
+        input.id = `edit-field-${col}`;
+        
+        group.appendChild(label);
+        group.appendChild(input);
+        fieldsContainer.appendChild(group);
+      });
+      
+      document.getElementById('studio-edit-row-modal').classList.remove('hidden');
+    }
+    
+    function closeEditRowModal() {
+      document.getElementById('studio-edit-row-modal').classList.add('hidden');
+    }
+
+    document.getElementById('form-studio-edit-row').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const rowId = document.getElementById('studio-edit-row-id').value;
+      const tableName = studioState.activeTable;
+      const fieldsContainer = document.getElementById('studio-edit-row-fields');
+      const inputs = fieldsContainer.querySelectorAll('input, select');
+      
+      const updateData = {};
+      inputs.forEach(input => {
+        let val = input.value;
+        if (input.type === 'number') {
+          val = parseFloat(val);
+        } else if (input.tagName === 'SELECT') {
+          val = val === 'true';
+        }
+        updateData[input.name] = val;
+      });
+      
+      try {
+        const res = await fetch(`${API_URL}/dev/db/tables/${tableName}/${rowId}`, {
+          method: 'PUT',
+          headers: getHeaders(),
+          body: JSON.stringify({ data: updateData })
+        });
+        
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || 'Failed to update record');
+        }
+        
+        showToast('Record updated successfully', 'success');
+        closeEditRowModal();
+        loadStudioTableData(tableName);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    function openCreateRowModal() {
+      const tableName = studioState.activeTable;
+      document.getElementById('studio-add-row-desc').innerText = `Insert new record into table ${tableName}`;
+      
+      const fieldsContainer = document.getElementById('studio-add-row-fields');
+      fieldsContainer.innerHTML = '';
+      
+      const columns = TABLE_COLUMNS[tableName] || [];
+      columns.forEach(col => {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+        group.style.marginBottom = '12px';
+        
+        const label = document.createElement('label');
+        label.innerText = col;
+        label.style.fontWeight = '600';
+        
+        let input;
+        
+        if (col === 'is_admin' || col === 'is_active') {
+          input = document.createElement('select');
+          input.className = 'form-control';
+          input.innerHTML = `
+            <option value="true">True</option>
+            <option value="false" selected>False</option>
+          `;
+        } else if (col === 'balance' || col === 'amount' || col === 'weight' || col === 'user_id' || col === 'account_id' || col === 'transaction_id') {
+          input = document.createElement('input');
+          input.type = 'number';
+          input.step = 'any';
+          input.className = 'form-control';
+          input.value = col === 'weight' ? '0.25' : col === 'balance' ? '1000' : '0';
+        } else if (col === 'password') {
+          input = document.createElement('input');
+          input.type = 'password';
+          input.className = 'form-control';
+          input.placeholder = 'Raw password (will be hashed)';
+        } else {
+          input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'form-control';
+          input.placeholder = `Enter ${col}`;
+        }
+        
+        input.name = col;
+        input.id = `add-field-${col}`;
+        
+        group.appendChild(label);
+        group.appendChild(input);
+        fieldsContainer.appendChild(group);
+      });
+      
+      document.getElementById('studio-add-row-modal').classList.remove('hidden');
+    }
+    
+    function closeCreateRowModal() {
+      document.getElementById('studio-add-row-modal').classList.add('hidden');
+    }
+
+    document.getElementById('form-studio-add-row').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const tableName = studioState.activeTable;
+      const fieldsContainer = document.getElementById('studio-add-row-fields');
+      const inputs = fieldsContainer.querySelectorAll('input, select');
+      
+      const insertData = {};
+      inputs.forEach(input => {
+        let val = input.value;
+        if (input.type === 'number') {
+          val = parseFloat(val);
+        } else if (input.tagName === 'SELECT') {
+          val = val === 'true';
+        }
+        insertData[input.name] = val;
+      });
+      
+      try {
+        const res = await fetch(`${API_URL}/dev/db/tables/${tableName}`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({ data: insertData })
+        });
+        
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.detail || 'Failed to insert record');
+        }
+        
+        showToast('Record inserted successfully', 'success');
+        closeCreateRowModal();
+        loadStudioTableData(tableName);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+
+    async function executeStudioSQL() {
+      const sqlQuery = document.getElementById('studio-sql-query').value.trim();
+      const container = document.getElementById('studio-sql-result-container');
+      const msg = document.getElementById('studio-sql-message');
+      const grid = document.getElementById('studio-sql-table');
+      const thead = grid.querySelector('thead');
+      const tbody = grid.querySelector('tbody');
+      
+      if (!sqlQuery) {
+        showToast('Please write an SQL query first', 'error');
+        return;
+      }
+      
+      container.classList.remove('hidden');
+      msg.className = '';
+      msg.innerText = 'Executing query...';
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
+      
+      try {
+        const res = await fetch(`${API_URL}/dev/db/query`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({ query: sqlQuery })
+        });
+        
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || 'SQL compilation failed');
+        }
+        
+        if (data.type === 'select') {
+          msg.className = 'badge badge-allow';
+          msg.innerText = `SELECT success: returned ${data.row_count} rows`;
+          
+          if (data.row_count === 0) {
+            thead.innerHTML = '<tr><th class="sql-res-th">Result Set</th></tr>';
+            tbody.innerHTML = '<tr><td class="sql-res-td" style="color: var(--text-dark); font-style: italic;">No rows returned.</td></tr>';
+            return;
+          }
+          
+          let headerHtml = '<tr>';
+          data.columns.forEach(col => {
+            headerHtml += `<th class="sql-res-th">${col}</th>`;
+          });
+          headerHtml += '</tr>';
+          thead.innerHTML = headerHtml;
+          
+          let rowsHtml = '';
+          data.rows.forEach(row => {
+            let rowHtml = '<tr>';
+            data.columns.forEach(col => {
+              let val = row[col];
+              if (val === null || val === undefined) val = 'null';
+              rowHtml += `<td class="sql-res-td">${val}</td>`;
+            });
+            rowHtml += '</tr>';
+            rowsHtml += rowHtml;
+          });
+          tbody.innerHTML = rowsHtml;
+        } else {
+          msg.className = 'badge badge-allow';
+          msg.innerText = `Command executed successfully. Row count affected: ${data.row_count}`;
+        }
+        
+        refreshActiveStudioTable();
+      } catch (err) {
+        msg.className = 'badge badge-block';
+        msg.innerText = `Error: ${err.message}`;
+      }
+    }
+
+    async function fetchWebhookSettings() {
+      try {
+        const res = await fetch(`${API_URL}/admin/webhook-settings`, {
+          headers: getHeaders()
+        });
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('webhook-target-url-input').value = data.webhook_url;
+        }
+      } catch (err) {
+        console.error("Error fetching webhook settings:", err);
+      }
+    }
+
+    async function saveWebhookSettings() {
+      const url = document.getElementById('webhook-target-url-input').value.trim();
+      try {
+        const res = await fetch(`${API_URL}/admin/webhook-settings`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({ webhook_url: url })
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.detail || 'Failed to save webhook settings');
+        }
+        showToast('Webhook target URL updated successfully', 'success');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function clearWebhookLogs() {
+      try {
+        const res = await fetch(`${API_URL}/dev/webhook-received`, {
+          method: 'DELETE',
+          headers: getHeaders()
+        });
+        if (res.ok) {
+          showToast('Webhook event log history cleared', 'success');
+          document.getElementById('webhook-event-log').innerHTML = `
+            <div style="color: #64748b; font-style: italic;">No webhook events dispatched yet. Make a transaction to trigger database update alerts.</div>
+          `;
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    let lastWebhookEventsJson = "";
+    async function pollWebhookEvents() {
+      if (!state.token) return;
+      const studioView = document.getElementById('view-studio');
+      if (studioView.classList.contains('hidden')) return;
+
+      try {
+        const res = await fetch(`${API_URL}/dev/webhook-received`, {
+          headers: getHeaders()
+        });
+        if (res.ok) {
+          const events = await res.json();
+          const eventsJson = JSON.stringify(events);
+          if (eventsJson !== lastWebhookEventsJson) {
+            lastWebhookEventsJson = eventsJson;
+            renderWebhookLogs(events);
+          }
+        }
+      } catch (err) {
+        console.error("Error polling webhooks:", err);
+      }
+    }
+
+    function renderWebhookLogs(events) {
+      const container = document.getElementById('webhook-event-log');
+      if (!container) return;
+
+      if (!events || events.length === 0) {
+        container.innerHTML = `
+          <div style="color: #64748b; font-style: italic;">No webhook events dispatched yet. Make a transaction to trigger database update alerts.</div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+      events.slice().reverse().forEach(evt => {
+        const div = document.createElement('div');
+        div.style.borderBottom = '1px solid #1e293b';
+        div.style.paddingBottom = '8px';
+        div.style.marginBottom = '8px';
+        
+        const timestamp = new Date(evt.received_at).toLocaleTimeString('en-IN');
+        const payload = evt.payload;
+        const eventName = payload.event || 'transaction.unknown';
+        const data = payload.data || {};
+        const txId = data.transaction_id || '-';
+        const decision = data.decision || 'ALLOW';
+        const riskScore = data.risk_score !== undefined ? data.risk_score.toFixed(2) : '-';
+        const amount = data.amount || 0;
+        
+        let statusColor = '#10b981';
+        if (decision === 'BLOCK') statusColor = '#ef4444';
+        else if (decision === 'REVIEW' || decision === 'NOTIFY') statusColor = '#f59e0b';
+
+        div.innerHTML = `
+          <div style="display: flex; justify-content: space-between; font-weight: 600; color: #94a3b8;">
+            <span>[${timestamp}] <span style="color: ${statusColor};">${eventName.toUpperCase()}</span></span>
+            <span>Tx ID: ${txId}</span>
+          </div>
+          <div style="margin-top: 4px; color: #cbd5e1;">
+            Amount: INR ${amount.toLocaleString('en-IN')} | Decision: <span style="color: ${statusColor}; font-weight: 600;">${decision}</span> | Risk: ${riskScore}
+          </div>
+          <div style="margin-top: 2px; font-size: 0.75rem; color: #64748b; word-break: break-all; white-space: pre-wrap; font-family: monospace;">
+            Payload: ${JSON.stringify(payload, null, 2)}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Start background polling for webhook receiver events
+    setInterval(pollWebhookEvents, 3000);
+  </script>
+</body>
+</html>
