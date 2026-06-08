@@ -148,6 +148,8 @@ async def create_transaction(
                     details[rule.code] = "Device linked to multiple distinct platform accounts"
                 elif rule.code == "REP-AMT":
                     details[rule.code] = f"Repeated transaction of amount INR {transaction.amount} detected in the last 5 minutes"
+                elif rule.code == "GEO-VEL-01":
+                    details[rule.code] = f"Rapid geographic jump: transaction to {transaction.country} detected within 15 minutes of a previous country"
                 else:
                     details[rule.code] = f"Rule '{rule.name}' triggered"
         except Exception as e:

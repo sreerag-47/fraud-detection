@@ -205,7 +205,26 @@ async def run_tests():
         assert "VEL-TEST-01" in event2["data"]["triggered_rules"]
         safe_print("✓ Successfully verified BLOCK event webhook dispatch!")
 
-        safe_print("\n✓ Integration and dynamic webhook tests completed successfully!")
+        # 10. Make a rapid geographic jump to trigger GEO-VEL-01
+        safe_print("\n--- [STEP 10] Processing Geo-Jump Transaction (INR 100 in Germany) ---")
+        geo_tx_payload = {
+            "account_id": account_id,
+            "amount": 100.0,
+            "merchant_name": "Berlin Cafe",
+            "merchant_category": "food",
+            "city": "Berlin",
+            "country": "Germany",
+            "ip_address": "46.100.12.1",
+            "device_id": "test_device_1"
+        }
+        geo_response = await client.post("/transactions/", json=geo_tx_payload, headers=headers)
+        assert geo_response.status_code == 200
+        geo_data = geo_response.json()
+        safe_print("Geo-Jump Transaction Response:", geo_data)
+        assert "GEO-VEL-01" in geo_data["triggered_rules"]
+        safe_print("✓ Successfully verified GEO-VEL-01 dynamic geo-velocity rule!")
+
+        safe_print("\n✓ Integration, dynamic webhook, and geo-velocity tests completed successfully!")
 
 if __name__ == "__main__":
     asyncio.run(run_tests())
